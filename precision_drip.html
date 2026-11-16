@@ -1,0 +1,2011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Precision Drip Architecture — AgriBot Agri-Tech</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================================================
+           AGRI-PRECISION DESIGN SYSTEM: LUSH GREEN & CRISP WHITE THEME
+           ========================================================================== */
+        :root {
+            --forest-950: #061A0F;
+            --forest-900: #0B2917;
+            --forest-800: #103B22;
+            --forest-700: #185231;
+            --emerald-600: #1B7A45;
+            --emerald-500: #22C55E;
+            --emerald-400: #4ADE80;
+            --sprout-300: #86EFAC;
+            --lime-accent: #A3E635;
+            --lime-bright: #BEF264;
+            --soil-earth: #3E2723;
+            --soil-warm: #6D4C41;
+            --water-cyan: #0EA5E9;
+            --water-glow: #38BDF8;
+            --solar-amber: #F59E0B;
+            --danger-coral: #EF4444;
+
+            /* Light / Crisp Surfaces */
+            --bg-canvas: #F8FAF8;
+            --surface-white: #FFFFFF;
+            --surface-elevated: #F1F6F2;
+            --surface-accent: #E8F3EB;
+            --border-light: #E1EBE3;
+            --border-medium: #C5DAC9;
+            --border-glow: rgba(34, 197, 94, 0.25);
+
+            /* Typography */
+            --text-heading: #092615;
+            --text-body: #2D4A38;
+            --text-muted: #5E7A69;
+            --text-on-dark: #F2FDF5;
+            --text-on-dark-muted: #9BB8A5;
+
+            /* Shadows & Radii */
+            --shadow-sm: 0 2px 8px rgba(11, 41, 23, 0.04);
+            --shadow-md: 0 10px 30px rgba(11, 41, 23, 0.08);
+            --shadow-lg: 0 20px 50px rgba(11, 41, 23, 0.12);
+            --shadow-glow: 0 0 35px rgba(34, 197, 94, 0.25);
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-full: 9999px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: -0.02em;
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        body {
+            background-color: var(--bg-canvas);
+            color: var(--text-body);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* --- GLOBAL AGRICULTURAL BADGES & BUTTONS --- */
+        .agri-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: var(--radius-full);
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            background: rgba(34, 197, 94, 0.12);
+            color: var(--forest-800);
+            border: 1px solid rgba(34, 197, 94, 0.28);
+        }
+
+        .agri-badge.dark {
+            background: rgba(163, 230, 53, 0.15);
+            color: var(--lime-bright);
+            border-color: rgba(163, 230, 53, 0.35);
+        }
+
+        .agri-badge-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background-color: var(--emerald-500);
+            box-shadow: 0 0 10px var(--emerald-500);
+            animation: pulseDot 2s infinite;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.75); }
+        }
+
+        .btn-agri-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, var(--emerald-600) 0%, var(--forest-800) 100%);
+            color: #FFFFFF;
+            font-weight: 600;
+            font-size: 15px;
+            border-radius: var(--radius-full);
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 10px 25px rgba(16, 59, 34, 0.25);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+        }
+
+        .btn-agri-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 30px rgba(16, 59, 34, 0.35);
+            background: linear-gradient(135deg, var(--emerald-500) 0%, var(--forest-700) 100%);
+        }
+
+        .btn-agri-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px;
+            background: var(--surface-white);
+            color: var(--forest-900);
+            font-weight: 600;
+            font-size: 15px;
+            border-radius: var(--radius-full);
+            text-decoration: none;
+            border: 1px solid var(--border-medium);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-agri-secondary:hover {
+            border-color: var(--emerald-500);
+            color: var(--emerald-600);
+            transform: translateY(-2px);
+        }
+
+        /* ==========================================================================
+           NAVIGATION BAR
+           ========================================================================== */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 6%;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-light);
+            transition: all 0.3s ease;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--forest-900), var(--emerald-600));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--lime-accent);
+            box-shadow: 0 4px 12px rgba(11, 41, 23, 0.15);
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-name {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--forest-950);
+            letter-spacing: -0.03em;
+            line-height: 1;
+        }
+
+        .brand-sub {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--emerald-600);
+            margin-top: 3px;
+        }
+
+        .nav-center {
+            display: flex;
+            align-items: center;
+            background: var(--surface-elevated);
+            padding: 4px 6px;
+            border-radius: var(--radius-full);
+            border: 1px solid var(--border-light);
+            list-style: none;
+            gap: 4px;
+        }
+
+        .nav-center a {
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 8px 18px;
+            border-radius: var(--radius-full);
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-center a:hover {
+            color: var(--forest-900);
+        }
+
+        .nav-center a.active {
+            background: var(--surface-white);
+            color: var(--forest-950);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid var(--border-light);
+        }
+
+        .nav-cta-group {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .live-telemetry-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--emerald-600);
+            background: rgba(34, 197, 94, 0.1);
+            padding: 6px 14px;
+            border-radius: var(--radius-full);
+            border: 1px solid rgba(34, 197, 94, 0.25);
+        }
+
+        /* ==========================================================================
+           HERO SECTION: THE INTERACTIVE ROOT ZONE SIMULATOR
+           ========================================================================== */
+        .hero-section {
+            position: relative;
+            padding-top: 140px;
+            padding-bottom: 90px;
+            padding-left: 6%;
+            padding-right: 6%;
+            background: radial-gradient(circle at 50% 20%, #F1F8F3 0%, var(--bg-canvas) 70%);
+            overflow: hidden;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 50px;
+            align-items: center;
+            max-width: 1360px;
+            margin: 0 auto;
+        }
+
+        .hero-copy {
+            z-index: 10;
+        }
+
+        .hero-copy h1 {
+            font-size: 58px;
+            font-weight: 800;
+            color: var(--forest-950);
+            line-height: 1.12;
+            margin-top: 20px;
+            margin-bottom: 22px;
+        }
+
+        .hero-copy h1 .highlight-leaf {
+            position: relative;
+            display: inline-block;
+            color: var(--emerald-600);
+            background: linear-gradient(135deg, #166534 0%, #15803D 50%, #22C55E 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-copy p {
+            font-size: 18.5px;
+            color: var(--text-muted);
+            line-height: 1.65;
+            margin-bottom: 36px;
+            max-width: 580px;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .hero-stat-ribbon {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding-top: 28px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .ribbon-item h4 {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--forest-900);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .ribbon-item p {
+            font-size: 12.5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* --- HERO GIMMICK: INTERACTIVE ROOT & DRIP BULB SIMULATOR CARD --- */
+        .simulator-card {
+            background: var(--surface-white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-medium);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .sim-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 22px;
+            background: var(--surface-elevated);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .sim-title {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--forest-900);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sim-canvas-wrap {
+            position: relative;
+            height: 380px;
+            background: linear-gradient(180deg, #EBF5ED 0%, #E3EFE6 35%, #5D4037 36%, #3E2723 100%);
+            overflow: hidden;
+        }
+
+        /* Soil Strata Visual */
+        .soil-line {
+            position: absolute;
+            top: 35%;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #8D6E63;
+            border-top: 2px dashed #A1887F;
+            z-index: 2;
+        }
+
+        .soil-depth-label {
+            position: absolute;
+            right: 12px;
+            font-size: 10.5px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.7);
+            background: rgba(0,0,0,0.3);
+            padding: 2px 8px;
+            border-radius: 4px;
+            z-index: 10;
+        }
+
+        /* Seedling / Plant Visual */
+        .crop-stem {
+            position: absolute;
+            bottom: 65%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 80px;
+            background: linear-gradient(to top, #166534, #22C55E);
+            border-radius: 3px;
+            z-index: 5;
+        }
+
+        .crop-leaf {
+            position: absolute;
+            width: 44px;
+            height: 22px;
+            background: linear-gradient(135deg, #4ADE80, #15803D);
+            border-radius: 0 100% 0 100%;
+            z-index: 5;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .crop-leaf.left {
+            top: -15px;
+            left: -38px;
+            transform: rotate(-25deg);
+        }
+
+        .crop-leaf.right {
+            top: 5px;
+            right: -38px;
+            transform: rotate(25deg) scaleX(-1);
+        }
+
+        /* Drip Line & Emitter Tube */
+        .drip-pipe {
+            position: absolute;
+            top: 42%;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: #212121;
+            border-top: 1px solid #424242;
+            border-bottom: 1px solid #1a1a1a;
+            z-index: 6;
+        }
+
+        .drip-emitter {
+            position: absolute;
+            top: 41%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 18px;
+            height: 14px;
+            background: #00E5FF;
+            border-radius: 4px;
+            box-shadow: 0 0 12px #00E5FF;
+            z-index: 7;
+        }
+
+        /* Water Capillary Bulb Animation */
+        .moisture-bulb {
+            position: absolute;
+            top: 43%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 120px;
+            background: radial-gradient(ellipse at center, rgba(14, 165, 233, 0.75) 0%, rgba(14, 165, 233, 0.35) 50%, rgba(14, 165, 233, 0) 75%);
+            border-radius: 50% 50% 60% 60% / 50% 50% 70% 70%;
+            z-index: 3;
+            filter: blur(4px);
+            transition: all 0.4s ease;
+            animation: breatheBulb 3s infinite ease-in-out;
+        }
+
+        @keyframes breatheBulb {
+            0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.85; }
+            50% { transform: translateX(-50%) scale(1.08); opacity: 1; }
+        }
+
+        /* SVG Root Structure */
+        .root-svg-container {
+            position: absolute;
+            top: 35%;
+            left: 0;
+            width: 100%;
+            height: 65%;
+            z-index: 4;
+            pointer-events: none;
+        }
+
+        /* Animated Water Droplet Physics */
+        .sim-droplet {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 12px;
+            background: var(--water-glow);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            box-shadow: 0 0 12px var(--water-glow);
+            z-index: 8;
+            animation: fallDrip 1.8s infinite cubic-bezier(0.55, 0.085, 0.68, 0.53);
+        }
+
+        @keyframes fallDrip {
+            0% { top: 44%; opacity: 0; transform: translateX(-50%) scale(0.6); }
+            20% { opacity: 1; }
+            75% { top: 72%; opacity: 1; transform: translateX(-50%) scale(1.2); }
+            85% { top: 74%; opacity: 0; transform: translateX(-50%) scale(2); }
+            100% { top: 74%; opacity: 0; }
+        }
+
+        /* Controls Footer */
+        .sim-controls {
+            padding: 20px 24px;
+            background: var(--surface-white);
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .sim-slider-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .sim-slider-row label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--forest-900);
+            white-space: nowrap;
+        }
+
+        .range-slider {
+            flex: 1;
+            accent-color: var(--emerald-600);
+            cursor: pointer;
+            height: 6px;
+            background: var(--border-medium);
+            border-radius: 3px;
+        }
+
+        .sim-readout-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            background: var(--surface-accent);
+            color: var(--forest-900);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-medium);
+        }
+
+        /* ==========================================================================
+           SECTION: KINETIC DUAL-PANE COMPARISON (FLOOD VS DRIP)
+           ========================================================================== */
+        .comparison-section {
+            padding: 100px 6%;
+            background: var(--surface-white);
+            border-top: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .section-header-center {
+            text-align: center;
+            max-width: 760px;
+            margin: 0 auto 60px auto;
+        }
+
+        .section-header-center h2 {
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--forest-950);
+            margin-top: 16px;
+            margin-bottom: 16px;
+        }
+
+        .section-header-center p {
+            font-size: 17px;
+            color: var(--text-muted);
+        }
+
+        .split-card-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .agri-compare-card {
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-md);
+            background: var(--surface-white);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .agri-compare-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .agri-compare-card.flood {
+            border-top: 5px solid var(--danger-coral);
+        }
+
+        .agri-compare-card.precision {
+            border-top: 5px solid var(--emerald-500);
+            background: linear-gradient(180deg, #FAFCFA 0%, #FFFFFF 100%);
+        }
+
+        .card-visual-frame {
+            height: 220px;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+        }
+
+        .card-visual-frame .frame-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(6, 26, 15, 0.85) 0%, rgba(6, 26, 15, 0.2) 100%);
+            display: flex;
+            align-items: flex-end;
+            padding: 24px;
+        }
+
+        .frame-overlay h3 {
+            color: #FFFFFF;
+            font-size: 26px;
+            font-weight: 800;
+        }
+
+        .card-body-content {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .card-body-content p {
+            font-size: 15px;
+            color: var(--text-body);
+            line-height: 1.65;
+        }
+
+        .feature-metric-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .feature-metric-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 13.5px;
+            font-weight: 600;
+        }
+
+        .feature-metric-item.bad {
+            background: rgba(239, 68, 68, 0.08);
+            color: #991B1B;
+            border-left: 3px solid var(--danger-coral);
+        }
+
+        .feature-metric-item.good {
+            background: rgba(34, 197, 94, 0.1);
+            color: #166534;
+            border-left: 3px solid var(--emerald-500);
+        }
+
+        /* ==========================================================================
+           SECTION: TELEMETRY COMMAND CENTER & INTERACTIVE HOTSPOTS
+           ========================================================================== */
+        .tech-showcase-section {
+            padding: 110px 6%;
+            background: var(--surface-elevated);
+            position: relative;
+        }
+
+        .telemetry-layout {
+            display: grid;
+            grid-template-columns: 1.3fr 0.7fr;
+            gap: 40px;
+            max-width: 1320px;
+            margin: 0 auto;
+            align-items: start;
+        }
+
+        .diagram-viewport {
+            position: relative;
+            background: linear-gradient(135deg, var(--forest-950) 0%, var(--forest-900) 100%);
+            border-radius: var(--radius-lg);
+            height: 540px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .diagram-bg-art {
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(34, 197, 94, 0.15) 1px, transparent 1px);
+            background-size: 24px 24px;
+            opacity: 0.7;
+        }
+
+        /* Architectural SVG Crop Row Grid inside dark telemetry */
+        .svg-subsurface-mesh {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Hotspot Nodes */
+        .node-pin {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--lime-bright);
+            color: var(--forest-950);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 13px;
+            cursor: pointer;
+            z-index: 20;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 0 6px rgba(190, 242, 100, 0.25), 0 8px 18px rgba(0,0,0,0.3);
+        }
+
+        .node-pin:hover, .node-pin.active {
+            transform: scale(1.25);
+            background: #FFFFFF;
+            box-shadow: 0 0 0 10px rgba(34, 197, 94, 0.4), 0 0 25px var(--emerald-400);
+        }
+
+        .node-pin::after {
+            content: '';
+            position: absolute;
+            inset: -12px;
+            border-radius: 50%;
+            border: 2px dashed rgba(163, 230, 53, 0.6);
+            animation: spinRing 12s linear infinite;
+        }
+
+        @keyframes spinRing {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Node coordinates */
+        .pin-node-1 { top: 22%; left: 24%; }
+        .pin-node-2 { top: 48%; left: 52%; }
+        .pin-node-3 { top: 76%; left: 74%; }
+        .pin-node-4 { top: 32%; left: 78%; }
+
+        /* Telemetry Inspector Card (Right Pane) */
+        .inspector-panel {
+            background: var(--surface-white);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-medium);
+            padding: 36px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .inspector-badge {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--emerald-600);
+            background: var(--surface-accent);
+            padding: 4px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        .inspector-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--forest-950);
+            margin-bottom: 14px;
+        }
+
+        .inspector-desc {
+            font-size: 15px;
+            color: var(--text-body);
+            line-height: 1.65;
+            margin-bottom: 24px;
+        }
+
+        .inspector-specs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .spec-tile {
+            background: var(--surface-elevated);
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-light);
+        }
+
+        .spec-tile .spec-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .spec-tile .spec-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--forest-900);
+        }
+
+        /* ==========================================================================
+           SECTION: FARM ROI & WATER SAVINGS CALCULATOR (AGRI GIMMICK)
+           ========================================================================== */
+        .calculator-section {
+            padding: 110px 6%;
+            background: linear-gradient(135deg, var(--forest-950) 0%, var(--forest-900) 100%);
+            color: var(--text-on-dark);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calc-wrapper {
+            max-width: 1240px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .calc-left h2 {
+            font-size: 44px;
+            font-weight: 800;
+            color: #FFFFFF;
+            margin-top: 16px;
+            margin-bottom: 18px;
+            line-height: 1.15;
+        }
+
+        .calc-left p {
+            font-size: 17px;
+            color: var(--text-on-dark-muted);
+            margin-bottom: 36px;
+            line-height: 1.6;
+        }
+
+        .calc-inputs-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            padding: 28px;
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .calc-control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .calc-control-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calc-control-header label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #FFFFFF;
+        }
+
+        .crop-select-pill-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .crop-pill {
+            background: rgba(255, 255, 255, 0.08);
+            color: #FFFFFF;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .crop-pill.active, .crop-pill:hover {
+            background: var(--lime-bright);
+            color: var(--forest-950);
+            border-color: var(--lime-bright);
+        }
+
+        .calc-results-card {
+            background: var(--surface-white);
+            color: var(--text-body);
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .results-header {
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 20px;
+        }
+
+        .results-header h3 {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--forest-950);
+        }
+
+        .results-header p {
+            font-size: 13.5px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .roi-display-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .roi-stat-box {
+            background: var(--surface-elevated);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-light);
+        }
+
+        .roi-stat-box.primary {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.12), rgba(163, 230, 53, 0.12));
+            border-color: rgba(34, 197, 94, 0.3);
+            grid-column: span 2;
+        }
+
+        .roi-stat-box .val-num {
+            font-family: 'Outfit', sans-serif;
+            font-size: 38px;
+            font-weight: 800;
+            color: var(--forest-900);
+            line-height: 1.1;
+        }
+
+        .roi-stat-box.primary .val-num {
+            color: var(--emerald-600);
+            font-size: 46px;
+        }
+
+        .roi-stat-box .val-desc {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* ==========================================================================
+           SECTION: TECHNICAL DOCUMENTATION ACCORDION
+           ========================================================================== */
+        .technical-docs-section {
+            padding: 110px 6%;
+            background: var(--surface-white);
+        }
+
+        .docs-container {
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        .agri-accordion-item {
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            margin-bottom: 16px;
+            overflow: hidden;
+            background: var(--surface-white);
+            transition: all 0.25s ease;
+        }
+
+        .agri-accordion-item.active {
+            border-color: var(--emerald-500);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .accordion-header-btn {
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            padding: 24px 28px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--forest-950);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            transition: color 0.2s ease;
+        }
+
+        .accordion-header-btn:hover {
+            color: var(--emerald-600);
+        }
+
+        .accordion-icon-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--surface-accent);
+            color: var(--forest-900);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            flex-shrink: 0;
+        }
+
+        .agri-accordion-item.active .accordion-icon-badge {
+            transform: rotate(45deg);
+            background: var(--emerald-500);
+            color: #FFFFFF;
+        }
+
+        .accordion-content-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0, 1, 0, 1);
+        }
+
+        .accordion-content-inner {
+            padding: 0 28px 28px 28px;
+            color: var(--text-body);
+            font-size: 15.5px;
+            line-height: 1.7;
+            border-top: 1px dashed var(--border-light);
+            padding-top: 20px;
+        }
+
+        /* ==========================================================================
+           FOOTER
+           ========================================================================== */
+        footer {
+            background: var(--forest-950);
+            color: var(--text-on-dark-muted);
+            padding: 70px 6% 35px 6%;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .footer-top {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr 1fr;
+            gap: 40px;
+            max-width: 1280px;
+            margin: 0 auto 50px auto;
+        }
+
+        .footer-brand p {
+            font-size: 14.5px;
+            line-height: 1.6;
+            margin-top: 16px;
+            max-width: 340px;
+        }
+
+        .footer-col h5 {
+            color: #FFFFFF;
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-col a {
+            color: var(--text-on-dark-muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .footer-col a:hover {
+            color: var(--lime-bright);
+        }
+
+        .footer-bottom {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        @media (max-width: 1024px) {
+            .hero-grid, .telemetry-layout, .calc-wrapper {
+                grid-template-columns: 1fr;
+            }
+            .split-card-container {
+                grid-template-columns: 1fr;
+            }
+            .footer-top {
+                grid-template-columns: 1fr 1fr;
+            }
+            .hero-copy h1 {
+                font-size: 44px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            nav { padding: 14px 4%; }
+            .nav-center { display: none; }
+            .hero-stat-ribbon { grid-template-columns: 1fr; }
+            .footer-top { grid-template-columns: 1fr; }
+            .footer-bottom { flex-direction: column; gap: 14px; text-align: center; }
+        }
+    </style>
+
+  <!-- ===== AGRIBOT GLOBAL UI ENHANCEMENTS ===== -->
+  <style>
+    /* ==========================================
+       1. DARK MODE — CSS Custom Properties
+       ========================================== */
+    :root {
+      --bg-primary: #F8FAF9;
+      --bg-card: #FFFFFF;
+      --bg-header: rgba(255,255,255,0.92);
+      --text-primary: #092414;
+      --text-secondary: #3B6B4A;
+      --border-primary: #DCECE0;
+      --border-subtle: #EEF5F0;
+      --shadow-card: 0 4px 24px rgba(9,36,20,0.07);
+      --bg-input: #F0F5F1;
+    }
+    .dark {
+      --bg-primary: #0A1A10;
+      --bg-card: #112A18;
+      --bg-header: rgba(10,26,16,0.95);
+      --text-primary: #E8F5EC;
+      --text-secondary: #A3C9B0;
+      --border-primary: #1E3D28;
+      --border-subtle: #162E1E;
+      --shadow-card: 0 4px 24px rgba(0,0,0,0.35);
+      --bg-input: #162E1E;
+    }
+
+    /* Smooth transition on theme change */
+    body, header, main, section, footer, .dark-transition {
+      transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+    }
+
+    /* Dark mode overrides for common elements */
+    /* Dark mode color inversion removed — site is styled for crisp botanical light theme */
+    .dark body, body.dark { background-color: #F8FAF9 !important; color: #092414 !important; }
+    .dark header { background: rgba(255,255,255,0.95) !important; border-color: #DCECE0 !important; }
+    .dark main { color: inherit; }
+    .dark section { border-color: #DCECE0 !important; }
+
+    /* Dark Mode Toggle Button */
+    .dark-mode-toggle {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border-primary);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .dark-mode-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 12px rgba(163,230,53,0.3);
+    }
+    .dark-mode-toggle .icon-sun,
+    .dark-mode-toggle .icon-moon {
+      position: absolute;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
+    }
+    .dark-mode-toggle .icon-sun  { opacity: 1; transform: rotate(0deg) scale(1); }
+    .dark-mode-toggle .icon-moon { opacity: 0; transform: rotate(-90deg) scale(0.5); }
+    .dark .dark-mode-toggle .icon-sun  { opacity: 0; transform: rotate(90deg) scale(0.5); }
+    .dark .dark-mode-toggle .icon-moon { opacity: 1; transform: rotate(0deg) scale(1); }
+    .dark .dark-mode-toggle {
+      background: #1E3D28;
+      border-color: #2D5A3A;
+      color: #A3E635;
+    }
+
+        /* Page load smooth fade (NO transform on body) */
+    @keyframes pageFadeIn { from { opacity: 0.92; } to { opacity: 1; } }
+    body { animation: pageFadeIn 0.2s ease-out; }
+
+    /* ==========================================
+       3. SCROLL-TRIGGERED REVEAL ANIMATIONS
+       ========================================== */
+    .scroll-reveal {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .scroll-reveal.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ==========================================
+       4. TOOLTIP POPOVERS
+       ========================================== */
+    .agri-tooltip {
+      position: relative;
+    }
+    .agri-tooltip::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(6px);
+      background: #092414;
+      color: #E8F5EC;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.5;
+      padding: 8px 12px;
+      border-radius: 10px;
+      white-space: nowrap;
+      max-width: 280px;
+      white-space: normal;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 100;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+    .agri-tooltip::before {
+      content: '';
+      position: absolute;
+      bottom: calc(100% + 2px);
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #092414;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      z-index: 100;
+    }
+    .agri-tooltip:hover::after,
+    .agri-tooltip:hover::before {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .agri-tooltip:hover::before {
+      transform: translateX(-50%);
+    }
+    .dark .agri-tooltip::after {
+      background: #A3E635;
+      color: #052E16;
+    }
+    .dark .agri-tooltip::before {
+      border-top-color: #A3E635;
+    }
+
+    /* ==========================================
+       5. RIPPLE EFFECT ON BUTTONS
+       ========================================== */
+    .ripple-host {
+      position: relative;
+      overflow: hidden;
+    }
+    .ripple-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(163, 230, 53, 0.35);
+      transform: scale(0);
+      animation: rippleExpand 0.5s ease-out forwards;
+      pointer-events: none;
+    }
+    .dark .ripple-circle {
+      background: rgba(163, 230, 53, 0.2);
+    }
+    @keyframes rippleExpand {
+      to { transform: scale(4); opacity: 0; }
+    }
+
+    /* ==========================================
+       6. FLOATING SCROLL-TO-BOTTOM PILL (Chat)
+       ========================================== */
+    .scroll-bottom-pill {
+      position: absolute;
+      bottom: 72px;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: #092414;
+      color: #A3E635;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      border: 1.5px solid rgba(163,230,53,0.3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .scroll-bottom-pill.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+    .scroll-bottom-pill:hover {
+      background: #144227;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    }
+  </style>
+
+</head>
+<body>
+
+    <!-- ================= NAVIGATION ================= -->
+    <nav>
+        <a href="precision_drip.html" class="brand">
+            <div class="brand-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a10 10 0 0 1 10 10c0 5.25-3.5 8.75-8.5 9.75V15h-3v6.75C5.5 20.75 2 17.25 2 12A10 10 0 0 1 12 2z"/>
+                    <path d="M12 6v6l4 2"/>
+                </svg>
+            </div>
+            <div class="brand-text">
+                <span class="brand-name">AgriBot</span>
+                <span class="brand-sub">Precision Agri-Systems</span>
+            </div>
+        </a>
+
+        <div class="nav-center">
+            <a href="precision_drip.html" class="active">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+                01 Drip Architecture
+            </a>
+            <a href="regenerative_soil.html">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+                02 Regenerative Soil
+            </a>
+        </div>
+
+        <div class="nav-cta-group">
+            <div class="live-telemetry-pill">
+                <span class="agri-badge-dot"></span>
+                <span>Node Grid: Online</span>
+            </div>
+            <a href="#calculator" class="btn-agri-primary" style="padding: 10px 20px; font-size: 13.5px;">Calculate ROI</a>
+        </div>
+    </nav>
+
+    <!-- ================= HERO SECTION ================= -->
+    <header class="hero-section">
+        <div class="hero-grid">
+            <div class="hero-copy">
+                <div class="agri-badge">
+                    <span class="agri-badge-dot"></span>
+                    Subsurface Hydraulic Architecture
+                </div>
+                <h1>Engineered for the <br><span class="highlight-leaf">Living Root Zone.</span></h1>
+                <p>We don't flood the dirt. We hydrate the biology. Discover the AI-calibrated hydraulic network reducing agricultural water waste by 70% while maximizing crop metabolic absorption.</p>
+                
+                <div class="hero-actions">
+                    <a href="#simulator" class="btn-agri-primary">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        Explore Subsurface Physics
+                    </a>
+                    <a href="#telemetry" class="btn-agri-secondary">View Field Telemetry</a>
+                </div>
+
+                <div class="hero-stat-ribbon">
+                    <div class="ribbon-item">
+                        <h4 class="mono" style="color: var(--emerald-600);">70%</h4>
+                        <p>Water Saved / Acre</p>
+                    </div>
+                    <div class="ribbon-item">
+                        <h4 class="mono" style="color: var(--forest-900);">99.8%</h4>
+                        <p>Distribution Uniformity</p>
+                    </div>
+                    <div class="ribbon-item">
+                        <h4 class="mono" style="color: var(--forest-900);">0%</h4>
+                        <p>Surface Runoff Loss</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- INTERACTIVE GIMMICK: ROOT ZONE HYDRATION SIMULATOR -->
+            <div class="simulator-card" id="simulator">
+                <div class="sim-header">
+                    <div class="sim-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--emerald-600)" stroke-width="2.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+                        Capillary Moisture Bulb Simulator
+                    </div>
+                    <span class="agri-badge" style="font-size: 10.5px; padding: 3px 8px;">Live Physics</span>
+                </div>
+
+                <div class="sim-canvas-wrap">
+                    <!-- Plant Stem and Leaves -->
+                    <div class="crop-stem">
+                        <div class="crop-leaf left"></div>
+                        <div class="crop-leaf right"></div>
+                    </div>
+
+                    <!-- Soil Surface Line -->
+                    <div class="soil-line"></div>
+                    <span class="soil-depth-label" style="top: 37%;">0" Topsoil Horizon</span>
+                    <span class="soil-depth-label" style="top: 60%;">-12" Root Zone</span>
+                    <span class="soil-depth-label" style="bottom: 12px;">-24" Deep Subsoil</span>
+
+                    <!-- Drip Pipe & Emitter -->
+                    <div class="drip-pipe"></div>
+                    <div class="drip-emitter" title="Pressure Compensating Micro-Emitter"></div>
+
+                    <!-- Animated Water Capillary Bulb -->
+                    <div class="moisture-bulb" id="moistureBulb"></div>
+
+                    <!-- Droplet fall -->
+                    <div class="sim-droplet" id="simDroplet"></div>
+
+                    <!-- SVG Root System -->
+                    <svg class="root-svg-container" viewBox="0 0 400 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Main Taproot -->
+                        <path d="M200 10 Q200 80 198 160 Q196 190 195 230" stroke="#D7CCC8" stroke-width="4.5" stroke-linecap="round"/>
+                        <!-- Left Lateral Roots -->
+                        <path d="M198 45 Q160 70 120 95 Q90 115 65 140" stroke="#BCAAA4" stroke-width="2.5" stroke-linecap="round"/>
+                        <path d="M140 82 Q110 110 85 150" stroke="#A1887F" stroke-width="1.8" stroke-linecap="round"/>
+                        <path d="M197 90 Q150 120 110 165" stroke="#BCAAA4" stroke-width="2" stroke-linecap="round"/>
+                        <!-- Right Lateral Roots -->
+                        <path d="M200 48 Q240 75 280 100 Q315 125 340 155" stroke="#BCAAA4" stroke-width="2.5" stroke-linecap="round"/>
+                        <path d="M260 88 Q290 120 320 160" stroke="#A1887F" stroke-width="1.8" stroke-linecap="round"/>
+                        <path d="M198 105 Q245 140 280 185" stroke="#BCAAA4" stroke-width="2" stroke-linecap="round"/>
+                        <!-- Root Hairs & Capillaries -->
+                        <path d="M110 165 Q85 190 60 210" stroke="#8D6E63" stroke-width="1.2" stroke-dasharray="2 2"/>
+                        <path d="M280 185 Q305 210 330 225" stroke="#8D6E63" stroke-width="1.2" stroke-dasharray="2 2"/>
+                    </svg>
+                </div>
+
+                <div class="sim-controls">
+                    <div class="sim-slider-row">
+                        <label for="flowRateSlider">Emitter Flow Rate:</label>
+                        <input type="range" id="flowRateSlider" class="range-slider" min="0.5" max="4.0" step="0.1" value="1.6">
+                        <span class="sim-readout-badge" id="flowRateVal">1.6 L/hr</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted);">
+                        <span>Capillary Bulb Radius: <strong id="bulbRadiusVal" style="color: var(--forest-900);">18.5 cm</strong></span>
+                        <span>Soil Saturation: <strong style="color: var(--emerald-600);">Optimal Aerobic (72%)</strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= SECTION: COMPARISON (FLOOD VS DRIP) ================= -->
+    <section class="comparison-section">
+        <div class="section-header-center">
+            <div class="agri-badge">Macro vs. Micro Hydraulics</div>
+            <h2>The Agronomic Paradigm Shift</h2>
+            <p>Flood irrigation drowns soil biology and wastes millions of acre-feet. Subsurface precision micro-doses water directly to root hair interfaces with zero evaporation.</p>
+        </div>
+
+        <div class="split-card-container">
+            <!-- FLOOD CARD -->
+            <div class="agri-compare-card flood">
+                <div class="card-visual-frame" style="background-image: url('https://images.unsplash.com/photo-1595831969238-d65e239db8d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');">
+                    <div class="frame-overlay">
+                        <h3>Conventional Flood Method</h3>
+                    </div>
+                </div>
+                <div class="card-body-content">
+                    <p>Massive surface flooding suffocates roots, promotes anaerobic pathogens, and washes high-cost synthetic fertilizers straight into subterranean aquifers.</p>
+                    <ul class="feature-metric-list">
+                        <li class="feature-metric-item bad">
+                            <span>Evaporative Loss:</span>
+                            <span class="mono">50% - 65% Lost</span>
+                        </li>
+                        <li class="feature-metric-item bad">
+                            <span>Root Zone Oxygen:</span>
+                            <span class="mono">Hypoxic / Asphyxiated</span>
+                        </li>
+                        <li class="feature-metric-item bad">
+                            <span>Fertilizer Leaching:</span>
+                            <span class="mono">High Nitrate Loss</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- PRECISION CARD -->
+            <div class="agri-compare-card precision">
+                <div class="card-visual-frame" style="background-image: url('https://images.unsplash.com/photo-1592982537447-6f296d19a2b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');">
+                    <div class="frame-overlay">
+                        <h3>AgriBot Subsurface Precision</h3>
+                    </div>
+                </div>
+                <div class="card-body-content">
+                    <p>Calibrated drip micro-injection delivers precise moisture and nutrient stoichiometry directly into the root zone while preserving aerobic soil crumb structure.</p>
+                    <ul class="feature-metric-list">
+                        <li class="feature-metric-item good">
+                            <span>Evaporative Loss:</span>
+                            <span class="mono">&lt; 2% (Zero Runoff)</span>
+                        </li>
+                        <li class="feature-metric-item good">
+                            <span>Root Zone Oxygen:</span>
+                            <span class="mono">Optimal Aerobic Respiration</span>
+                        </li>
+                        <li class="feature-metric-item good">
+                            <span>Fertilizer Leaching:</span>
+                            <span class="mono">100% Nutrient Absorption</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= SECTION: TELEMETRY COMMAND CENTER ================= -->
+    <section class="tech-showcase-section" id="telemetry">
+        <div class="section-header-center">
+            <div class="agri-badge">Closed-Loop Agronomy</div>
+            <h2>Subsurface Telemetry Grid</h2>
+            <p>Select any node on the field diagram to inspect hardware specifications and live root-zone telemetry streams.</p>
+        </div>
+
+        <div class="telemetry-layout">
+            <!-- Subsurface Field Viewport with Hotspots -->
+            <div class="diagram-viewport">
+                <div class="diagram-bg-art"></div>
+                
+                <!-- SVG Schematic Grid -->
+                <svg class="svg-subsurface-mesh" viewBox="0 0 600 400" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="pipeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#22C55E" stop-opacity="0.2"/>
+                            <stop offset="50%" stop-color="#22C55E" stop-opacity="0.8"/>
+                            <stop offset="100%" stop-color="#22C55E" stop-opacity="0.2"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M 50 100 L 550 100" stroke="url(#pipeGrad)" stroke-width="3" stroke-dasharray="6 4"/>
+                    <path d="M 50 200 L 550 200" stroke="url(#pipeGrad)" stroke-width="3" stroke-dasharray="6 4"/>
+                    <path d="M 50 300 L 550 300" stroke="url(#pipeGrad)" stroke-width="3" stroke-dasharray="6 4"/>
+                    <circle cx="150" cy="100" r="6" fill="#A3E635"/>
+                    <circle cx="310" cy="200" r="6" fill="#A3E635"/>
+                    <circle cx="450" cy="300" r="6" fill="#A3E635"/>
+                    <circle cx="470" cy="130" r="6" fill="#A3E635"/>
+                </svg>
+
+                <!-- Hotspot Interactive Buttons -->
+                <div class="node-pin pin-node-1 active" data-node="1" onclick="switchNode(1)">1</div>
+                <div class="node-pin pin-node-2" data-node="2" onclick="switchNode(2)">2</div>
+                <div class="node-pin pin-node-3" data-node="3" onclick="switchNode(3)">3</div>
+                <div class="node-pin pin-node-4" data-node="4" onclick="switchNode(4)">4</div>
+            </div>
+
+            <!-- Inspector Details Panel -->
+            <div class="inspector-panel" id="inspectorPanel">
+                <span class="inspector-badge" id="inspBadge">Filtration Vector</span>
+                <h3 class="inspector-title" id="inspTitle">Hydro-Cyclone Filtration Hub</h3>
+                <p class="inspector-desc" id="inspDesc">Centrifugal vortex separation isolates sand, silts, and organic particulates prior to header entry, guaranteeing zero emitter occlusion over a 15-year field lifecycle.</p>
+                
+                <div class="inspector-specs">
+                    <div class="spec-tile">
+                        <span class="spec-label">Throughput Capacity</span>
+                        <span class="spec-val" id="inspSpec1">650 GPM</span>
+                    </div>
+                    <div class="spec-tile">
+                        <span class="spec-label">Particle Cutoff</span>
+                        <span class="spec-val" id="inspSpec2">75 Microns</span>
+                    </div>
+                    <div class="spec-tile">
+                        <span class="spec-label">Backwash Frequency</span>
+                        <span class="spec-val" id="inspSpec3">Auto / Pressure Δ</span>
+                    </div>
+                    <div class="spec-tile">
+                        <span class="spec-label">Uniformity Rating</span>
+                        <span class="spec-val" id="inspSpec4">99.8% CV</span>
+                    </div>
+                </div>
+
+                <div style="background: var(--surface-elevated); padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between;">
+                    <span style="font-size: 12.5px; font-weight: 600; color: var(--forest-900);">Hardware Status: Normal Operation</span>
+                    <span class="agri-badge-dot"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= SECTION: ROI & WATER SAVINGS CALCULATOR ================= -->
+    <section class="calculator-section" id="calculator">
+        <div class="calc-wrapper">
+            <div class="calc-left">
+                <div class="agri-badge dark">Interactive Agronomic Modeling</div>
+                <h2>Calculate Your Field's Water & Dollar Yield.</h2>
+                <p>Select your crop typology and acreage to view immediate volumetric water conservation, fertilizer savings, and capital payback metrics.</p>
+
+                <div class="calc-inputs-box">
+                    <div class="calc-control-group">
+                        <label>Select Crop Typology:</label>
+                        <div class="crop-select-pill-group">
+                            <button class="crop-pill active" onclick="setCrop(this, 1.0, 3.8, 'Almonds & Orchards')">Almonds / Orchards</button>
+                            <button class="crop-pill" onclick="setCrop(this, 0.85, 2.5, 'Vineyard Grapes')">Vineyards</button>
+                            <button class="crop-pill" onclick="setCrop(this, 1.15, 3.2, 'Row Crops (Corn/Soy)')">Row Crops</button>
+                            <button class="crop-pill" onclick="setCrop(this, 0.95, 4.1, 'Citrus Groves')">Citrus Groves</button>
+                        </div>
+                    </div>
+
+                    <div class="calc-control-group">
+                        <div class="calc-control-header">
+                            <label for="acreageRange">Farm Size (Acres):</label>
+                            <span class="mono" id="acreageVal" style="color: var(--lime-bright); font-weight: 700; font-size: 16px;">150 Acres</span>
+                        </div>
+                        <input type="range" id="acreageRange" class="range-slider" min="10" max="1000" step="10" value="150" oninput="updateCalculator()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROI Results Card -->
+            <div class="calc-results-card">
+                <div class="results-header">
+                    <div class="agri-badge" style="margin-bottom: 8px;">Simulated Annual Harvest Return</div>
+                    <h3 id="calcCropLabel">Almonds & Orchards (150 Acres)</h3>
+                    <p>Calculated against standard flood and central pivot benchmarks.</p>
+                </div>
+
+                <div class="roi-display-grid">
+                    <div class="roi-stat-box primary">
+                        <div class="val-num" id="waterSavedTotal">114.0M</div>
+                        <div class="val-desc">Gallons of Irrigation Water Saved / Year</div>
+                    </div>
+
+                    <div class="roi-stat-box">
+                        <div class="val-num mono" id="dollarSavedTotal" style="color: var(--forest-900);">$68,400</div>
+                        <div class="val-desc">Estimated Input Cost Savings ($)</div>
+                    </div>
+
+                    <div class="roi-stat-box">
+                        <div class="val-num mono" id="yieldGainTotal" style="color: var(--forest-900);">+34%</div>
+                        <div class="val-desc">Average Crop Yield Enhancement</div>
+                    </div>
+                </div>
+
+                <a href="regenerative_soil.html" class="btn-agri-primary" style="justify-content: center;">
+                    Next: Explore Regenerative Soil Cycles
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= SECTION: TECHNICAL DOCUMENTATION ================= -->
+    <section class="technical-docs-section">
+        <div class="section-header-center">
+            <div class="agri-badge">Hydraulic Engineering</div>
+            <h2>Technical Specifications</h2>
+            <p>Comprehensive engineering details for irrigation planners, agronomists, and soil scientists.</p>
+        </div>
+
+        <div class="docs-container">
+            <div class="agri-accordion-item active">
+                <button class="accordion-header-btn" onclick="toggleAccordion(this)">
+                    <span>How does Pressure Compensation (PC) maintain uniform flow across undulating terrain?</span>
+                    <span class="accordion-icon-badge">+</span>
+                </button>
+                <div class="accordion-content-panel" style="max-height: 500px;">
+                    <div class="accordion-inner">
+                        <strong>The Physics of Differential Pressure:</strong> In standard gravity-fed tubing, hydrostatic pressure decreases as elevation rises or as distance increases from the pump manifold. AgriBot PC emitters utilize an engineered medical-grade silicone diaphragm suspended over an elastomeric labyrinth channel. As inlet pressure fluctuates between 10 PSI and 60 PSI, the diaphragm flexes dynamically, regulating the discharge aperture to maintain an exact, fixed flow rate (±1.5%) across every single plant in the field.
+                    </div>
+                </div>
+            </div>
+
+            <div class="agri-accordion-item">
+                <button class="accordion-header-btn" onclick="toggleAccordion(this)">
+                    <span>What prevents root intrusion and soil ingestion into subterranean emitters?</span>
+                    <span class="accordion-icon-badge">+</span>
+                </button>
+                <div class="accordion-content-panel">
+                    <div class="accordion-inner">
+                        <strong>Anti-Siphon (AS) & Root Guard Technology:</strong> When the irrigation cycle terminates, standard drip lines create a temporary vacuum that draws surrounding dirt and fine root hairs into the nozzle. AgriBot emitters feature an integrated mechanical anti-siphon check-valve that instantly seals shut upon depressurization. Additionally, our emitter resin is infused with copper oxide micro-particles that harmlessly deflect root hairs without releasing harmful chemicals into the edible crop harvest.
+                    </div>
+                </div>
+            </div>
+
+            <div class="agri-accordion-item">
+                <button class="accordion-header-btn" onclick="toggleAccordion(this)">
+                    <span>How does micro-fertigation integrate with soil capacitance sensors?</span>
+                    <span class="accordion-icon-badge">+</span>
+                </button>
+                <div class="accordion-content-panel">
+                    <div class="accordion-inner">
+                        <strong>Closed-Loop Agronomic Automation:</strong> Dual-depth FDR (Frequency Domain Reflectometry) soil probes continuously read volumetric water content (VWC) and electrical conductivity (EC). When soil nutrient osmolarity drops below calibrated crop thresholds, the central fertigation injector dissolves water-soluble nitrogen, potassium, and phosphorus directly into the irrigation stream at precise parts-per-million (PPM) concentrations.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= FOOTER ================= -->
+    <footer>
+        <div class="footer-top">
+            <div class="footer-brand">
+                <a href="precision_drip.html" class="brand">
+                    <div class="brand-icon" style="background: var(--emerald-600); color: #fff;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a10 10 0 0 1 10 10c0 5.25-3.5 8.75-8.5 9.75V15h-3v6.75C5.5 20.75 2 17.25 2 12A10 10 0 0 1 12 2z"/></svg>
+                    </div>
+                    <div class="brand-text">
+                        <span class="brand-name" style="color: #FFFFFF;">AgriBot</span>
+                        <span class="brand-sub" style="color: var(--lime-bright);">Precision Agri-Systems</span>
+                    </div>
+                </a>
+                <p>Engineering sustainable, high-yield closed-loop hydraulic and soil biology architectures for next-generation global agriculture.</p>
+            </div>
+
+            <div class="footer-col">
+                <h5>Architecture</h5>
+                <ul>
+                    <li><a href="#simulator">Root Zone Physics</a></li>
+                    <li><a href="#telemetry">Subsurface Hardware</a></li>
+                    <li><a href="#calculator">ROI Modeling</a></li>
+                    <li><a href="regenerative_soil.html">Living Rhizosphere</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h5>Agronomy</h5>
+                <ul>
+                    <li><a href="#">Cover Crop Dynamics</a></li>
+                    <li><a href="#">Mycorrhizal Commerce</a></li>
+                    <li><a href="#">Soil Carbon Sequestration</a></li>
+                    <li><a href="#">Fertigation Recipes</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h5>Field Dispatch</h5>
+                <ul>
+                    <li><a href="#">Telemetry API</a></li>
+                    <li><a href="#">Agronomist Support</a></li>
+                    <li><a href="#">Hardware Warranty</a></li>
+                    <li><a href="#">Contact Engineering</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>&copy; 2026 AgriBot Agricultural Technologies Inc. All rights reserved.</span>
+            <span>Designed with Green & White Precision Agro-Theme</span>
+        </div>
+    </footer>
+
+    <!-- ================= INTERACTIVE SCRIPT LOGIC ================= -->
+    <script>
+        // --- 1. SIMULATOR DYNAMICS ---
+        const flowRateSlider = document.getElementById('flowRateSlider');
+        const flowRateVal = document.getElementById('flowRateVal');
+        const moistureBulb = document.getElementById('moistureBulb');
+        const bulbRadiusVal = document.getElementById('bulbRadiusVal');
+        const simDroplet = document.getElementById('simDroplet');
+
+        flowRateSlider.addEventListener('input', (e) => {
+            const flow = parseFloat(e.target.value);
+            flowRateVal.textContent = flow.toFixed(1) + ' L/hr';
+
+            // Scale moisture bulb width and height
+            const width = 100 + (flow * 30);
+            const height = 90 + (flow * 25);
+            moistureBulb.style.width = width + 'px';
+            moistureBulb.style.height = height + 'px';
+
+            const radius = (12 + (flow * 4.5)).toFixed(1);
+            bulbRadiusVal.textContent = radius + ' cm';
+
+            // Speed up drip animation at higher flow rates
+            const animDuration = (2.4 / (flow * 0.7)).toFixed(2);
+            simDroplet.style.animationDuration = Math.max(0.6, animDuration) + 's';
+        });
+
+        // --- 2. TELEMETRY INSPECTOR NODE SWITCHER ---
+        const telemetryData = {
+            1: {
+                badge: "Filtration Vector",
+                title: "Hydro-Cyclone Filtration Hub",
+                desc: "Centrifugal vortex separation isolates sand, silts, and organic particulates prior to header entry, guaranteeing zero emitter occlusion over a 15-year field lifecycle.",
+                spec1: "650 GPM",
+                spec2: "75 Microns",
+                spec3: "Auto / Pressure Δ",
+                spec4: "99.8% CV"
+            },
+            2: {
+                badge: "Delivery Hardware",
+                title: "Pressure-Compensating Silicone Emitter",
+                desc: "Integrated floating silicone diaphragm maintains exactly 1.6 L/hr output across 1,200 ft lateral runs with steep 15% grade elevation variations.",
+                spec1: "1.6 L/hr",
+                spec2: "10-60 PSI Range",
+                spec3: "Anti-Siphon AS",
+                spec4: "Cu2O Root Guard"
+            },
+            3: {
+                badge: "Sensor Substrate",
+                title: "Volumetric FDR Soil Dielectric Probe",
+                desc: "Triple-depth electromagnetic wave guides measure soil moisture, temperature, and electrical conductivity at 6\", 12\", and 24\" horizons every 5 minutes.",
+                spec1: "LoRaWAN 15km",
+                spec2: "±1% VWC Accuracy",
+                spec3: "0 - 15 dS/m EC",
+                spec4: "10-Yr Battery"
+            },
+            4: {
+                badge: "Nutrient Dosing",
+                title: "Automated Micro-Fertigation Injector",
+                desc: "Proportional peristaltic pumps inject organic macronutrient and bio-stimulant teas directly into the water stream, micro-dosing the crop like an IV drip.",
+                spec1: "0.01 - 5.0% Ratio",
+                spec2: "pH & EC Feedback",
+                spec3: "Zero Volatilization",
+                spec4: "4-Channel Dosing"
+            }
+        };
+
+        function switchNode(nodeId) {
+            document.querySelectorAll('.node-pin').forEach(pin => pin.classList.remove('active'));
+            const activePin = document.querySelector(`.node-pin[data-node="${nodeId}"]`);
+            if (activePin) activePin.classList.add('active');
+
+            const data = telemetryData[nodeId];
+            document.getElementById('inspBadge').textContent = data.badge;
+            document.getElementById('inspTitle').textContent = data.title;
+            document.getElementById('inspDesc').textContent = data.desc;
+            document.getElementById('inspSpec1').textContent = data.spec1;
+            document.getElementById('inspSpec2').textContent = data.spec2;
+            document.getElementById('inspSpec3').textContent = data.spec3;
+            document.getElementById('inspSpec4').textContent = data.spec4;
+        }
+
+        // --- 3. FARM ROI & WATER CALCULATOR ---
+        let currentMultiplier = 1.0;
+        let currentWaterPerAcreMGal = 3.8;
+        let currentCropName = "Almonds & Orchards";
+
+        function setCrop(btn, multiplier, waterBase, name) {
+            document.querySelectorAll('.crop-pill').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentMultiplier = multiplier;
+            currentWaterPerAcreMGal = waterBase;
+            currentCropName = name;
+            updateCalculator();
+        }
+
+        function updateCalculator() {
+            const acres = parseInt(document.getElementById('acreageRange').value);
+            document.getElementById('acreageVal').textContent = acres + ' Acres';
+            document.getElementById('calcCropLabel').textContent = `${currentCropName} (${acres} Acres)`;
+
+            // Savings computation: 70% of baseline consumption saved
+            const waterSavedMGal = ((acres * currentWaterPerAcreMGal * 0.7) * currentMultiplier * 0.28).toFixed(1);
+            const dollarSaved = Math.round(acres * 456 * currentMultiplier);
+            const yieldGain = Math.round(30 + (currentMultiplier * 5));
+
+            document.getElementById('waterSavedTotal').textContent = waterSavedMGal + 'M';
+            document.getElementById('dollarSavedTotal').textContent = '$' + dollarSaved.toLocaleString();
+            document.getElementById('yieldGainTotal').textContent = '+' + yieldGain + '%';
+        }
+
+        // --- 4. ACCORDION COMPONENT ---
+        function toggleAccordion(btn) {
+            const item = btn.parentElement;
+            const content = item.querySelector('.accordion-content-panel');
+            const isActive = item.classList.contains('active');
+
+            // Close all
+            document.querySelectorAll('.agri-accordion-item').forEach(el => {
+                el.classList.remove('active');
+                el.querySelector('.accordion-content-panel').style.maxHeight = null;
+            });
+
+            if (!isActive) {
+                item.classList.add('active');
+                content.style.maxHeight = content.scrollHeight + 'px';
+            }
+        }
+    </script>
+
+  <!-- ===== AGRIBOT GLOBAL UI ENHANCEMENT SCRIPTS ===== -->
+  <script>
+    // ==========================================
+    // 1. DARK MODE TOGGLE
+    // ==========================================
+    (function enforceCleanTheme() {
+      // Force clean, high-contrast botanical theme (site is designed for light mode)
+      document.documentElement.classList.remove('dark');
+      if (document.body) document.body.classList.remove('dark');
+      try {
+        localStorage.removeItem('agribot_dark_mode');
+      } catch (e) {}
+    })();
+
+    function toggleDarkMode() {
+      // Theme locked to crisp botanical mode for optimal contrast
+      document.documentElement.classList.remove("dark");
+    }
+
+    // ==========================================
+    // 3. SCROLL-TRIGGERED REVEAL ANIMATIONS
+    // ==========================================
+    /* Scroll reveal observer disabled to ensure all content stays 100% visible */
+
+    // ==========================================
+    // 5. RIPPLE EFFECT ON BUTTONS
+    // ==========================================
+    (function initRipple() {
+      document.addEventListener('click', function(e) {
+        const btn = e.target.closest('button, a.px-4, a.px-5, a.px-7, [onclick]');
+        if (!btn || btn.closest('#agroai-messages')) return;
+
+        btn.style.position = btn.style.position || 'relative';
+        btn.style.overflow = 'hidden';
+
+        const circle = document.createElement('span');
+        circle.classList.add('ripple-circle');
+        const rect = btn.getBoundingClientRect();
+        const diameter = Math.max(rect.width, rect.height) * 2;
+        circle.style.width = circle.style.height = diameter + 'px';
+        circle.style.left = (e.clientX - rect.left - diameter / 2) + 'px';
+        circle.style.top = (e.clientY - rect.top - diameter / 2) + 'px';
+
+        btn.appendChild(circle);
+        circle.addEventListener('animationend', function() { circle.remove(); });
+      });
+    })();
+  </script>
+
+</body>
+</html>

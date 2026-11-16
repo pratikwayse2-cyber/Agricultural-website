@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriBot Agri-Tech Suite — Green & White Agro-Design System</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts: Plus Jakarta Sans, Outfit & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Outfit"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            forest: {
+              950: '#04140A',
+              900: '#092414',
+              850: '#0F331E',
+              800: '#144227',
+              700: '#1B5E38',
+              600: '#227D4C',
+            },
+            emerald: {
+              500: '#10B981',
+              400: '#34D399',
+            },
+            sprout: {
+              300: '#86EFAC',
+              400: '#4ADE80',
+              500: '#22C55E',
+            },
+            lime: {
+              300: '#E4FA8E',
+              400: '#CFF632',
+              500: '#B4E618',
+            },
+            meadow: {
+              50: '#F7FAF8',
+              100: '#EEF5F0',
+              200: '#DCECE0',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- ===== AGRIBOT GLOBAL UI ENHANCEMENTS ===== -->
+  <style>
+    /* ==========================================
+       1. DARK MODE — CSS Custom Properties
+       ========================================== */
+    :root {
+      --bg-primary: #F8FAF9;
+      --bg-card: #FFFFFF;
+      --bg-header: rgba(255,255,255,0.92);
+      --text-primary: #092414;
+      --text-secondary: #3B6B4A;
+      --border-primary: #DCECE0;
+      --border-subtle: #EEF5F0;
+      --shadow-card: 0 4px 24px rgba(9,36,20,0.07);
+      --bg-input: #F0F5F1;
+    }
+    .dark {
+      --bg-primary: #0A1A10;
+      --bg-card: #112A18;
+      --bg-header: rgba(10,26,16,0.95);
+      --text-primary: #E8F5EC;
+      --text-secondary: #A3C9B0;
+      --border-primary: #1E3D28;
+      --border-subtle: #162E1E;
+      --shadow-card: 0 4px 24px rgba(0,0,0,0.35);
+      --bg-input: #162E1E;
+    }
+
+    /* Smooth transition on theme change */
+    body, header, main, section, footer, .dark-transition {
+      transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+    }
+
+    /* Dark mode overrides for common elements */
+    /* Dark mode color inversion removed — site is styled for crisp botanical light theme */
+    .dark body, body.dark { background-color: #F8FAF9 !important; color: #092414 !important; }
+    .dark header { background: rgba(255,255,255,0.95) !important; border-color: #DCECE0 !important; }
+    .dark main { color: inherit; }
+    .dark section { border-color: #DCECE0 !important; }
+
+    /* Dark Mode Toggle Button */
+    .dark-mode-toggle {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border-primary);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .dark-mode-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 12px rgba(163,230,53,0.3);
+    }
+    .dark-mode-toggle .icon-sun,
+    .dark-mode-toggle .icon-moon {
+      position: absolute;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
+    }
+    .dark-mode-toggle .icon-sun  { opacity: 1; transform: rotate(0deg) scale(1); }
+    .dark-mode-toggle .icon-moon { opacity: 0; transform: rotate(-90deg) scale(0.5); }
+    .dark .dark-mode-toggle .icon-sun  { opacity: 0; transform: rotate(90deg) scale(0.5); }
+    .dark .dark-mode-toggle .icon-moon { opacity: 1; transform: rotate(0deg) scale(1); }
+    .dark .dark-mode-toggle {
+      background: #1E3D28;
+      border-color: #2D5A3A;
+      color: #A3E635;
+    }
+
+        /* Page load smooth fade (NO transform on body) */
+    @keyframes pageFadeIn { from { opacity: 0.92; } to { opacity: 1; } }
+    body { animation: pageFadeIn 0.2s ease-out; }
+
+    /* ==========================================
+       3. SCROLL-TRIGGERED REVEAL ANIMATIONS
+       ========================================== */
+    .scroll-reveal {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .scroll-reveal.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ==========================================
+       4. TOOLTIP POPOVERS
+       ========================================== */
+    .agri-tooltip {
+      position: relative;
+    }
+    .agri-tooltip::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(6px);
+      background: #092414;
+      color: #E8F5EC;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.5;
+      padding: 8px 12px;
+      border-radius: 10px;
+      white-space: nowrap;
+      max-width: 280px;
+      white-space: normal;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 100;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+    .agri-tooltip::before {
+      content: '';
+      position: absolute;
+      bottom: calc(100% + 2px);
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #092414;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      z-index: 100;
+    }
+    .agri-tooltip:hover::after,
+    .agri-tooltip:hover::before {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .agri-tooltip:hover::before {
+      transform: translateX(-50%);
+    }
+    .dark .agri-tooltip::after {
+      background: #A3E635;
+      color: #052E16;
+    }
+    .dark .agri-tooltip::before {
+      border-top-color: #A3E635;
+    }
+
+    /* ==========================================
+       5. RIPPLE EFFECT ON BUTTONS
+       ========================================== */
+    .ripple-host {
+      position: relative;
+      overflow: hidden;
+    }
+    .ripple-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(163, 230, 53, 0.35);
+      transform: scale(0);
+      animation: rippleExpand 0.5s ease-out forwards;
+      pointer-events: none;
+    }
+    .dark .ripple-circle {
+      background: rgba(163, 230, 53, 0.2);
+    }
+    @keyframes rippleExpand {
+      to { transform: scale(4); opacity: 0; }
+    }
+
+    /* ==========================================
+       6. FLOATING SCROLL-TO-BOTTOM PILL (Chat)
+       ========================================== */
+    .scroll-bottom-pill {
+      position: absolute;
+      bottom: 72px;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: #092414;
+      color: #A3E635;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      border: 1.5px solid rgba(163,230,53,0.3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .scroll-bottom-pill.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+    .scroll-bottom-pill:hover {
+      background: #144227;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    }
+  </style>
+
+</head>
+<body class="bg-meadow-50 text-forest-900 font-sans antialiased selection:bg-lime-400 selection:text-forest-950 min-h-screen flex flex-col">
+
+  <!-- ================= HEADER ================= -->
+  <header class="bg-white border-b border-meadow-200 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-forest-900 to-forest-700 flex items-center justify-center text-lime-400 shadow-md">
+          <i data-lucide="sprout" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="font-display font-black text-2xl tracking-tight text-forest-950 leading-none">AgriBot</span>
+          <span class="block text-[10px] font-extrabold tracking-widest text-emerald-600 uppercase mt-0.5">Agro-Webpage Suite Hub</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="chatbot_page.html" class="flex items-center gap-2 text-xs font-bold bg-forest-900 text-lime-400 px-5 py-2.5 rounded-full hover:bg-forest-800 transition shadow-sm">
+          <span>Launch Command Center</span>
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= HERO ================= -->
+  <main class="flex-1 max-w-7xl mx-auto px-6 py-12 w-full">
+    
+    <div class="text-center max-w-3xl mx-auto mb-14">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 text-xs font-bold text-emerald-800 uppercase tracking-widest mb-4 border border-emerald-500/20">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        Green & Crisp White Botanical Theme Overhaul
+      </div>
+      <h1 class="text-4xl sm:text-6xl font-display font-black text-forest-950 tracking-tight leading-tight">
+        Modern Agricultural Web Platform
+      </h1>
+      <p class="text-forest-800/80 text-base sm:text-lg mt-3 leading-relaxed">
+        Explore the redesigned pages with unified botanical palettes, rich subterranean telemetry, and interactive agronomic gimmicks.
+      </p>
+    </div>
+
+    <!-- 7 Pages Showcase Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+      
+      <!-- 1. Command Center -->
+      <a href="chatbot_page.html" class="bg-white rounded-3xl p-6 border border-meadow-200 hover:border-emerald-500 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group no-underline text-inherit">
+        <div>
+          <div class="w-12 h-12 rounded-2xl bg-forest-950 text-lime-400 flex items-center justify-center mb-4 group-hover:scale-105 transition">
+            <i data-lucide="layout-dashboard" class="w-6 h-6"></i>
+          </div>
+          <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">Core Hub</span>
+          <h3 class="font-display font-bold text-xl text-forest-950 mt-2">Command Center & AgroAI</h3>
+          <p class="text-xs text-forest-700 leading-relaxed mt-2">
+            Features live zone telemetry, interactive AgroAI assistant modal with voice recording, question suggestion chips, and responsive agronomy FAQ.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-meadow-100 flex items-center justify-between text-xs font-bold text-emerald-600">
+          <span>chatbot_page.html</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+        </div>
+      </a>
+
+      <!-- 2. Mandi Market Intelligence -->
+      <a href="market_intelligence.html" class="bg-white rounded-3xl p-6 border border-meadow-200 hover:border-emerald-500 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group no-underline text-inherit">
+        <div>
+          <div class="w-12 h-12 rounded-2xl bg-emerald-600 text-lime-300 flex items-center justify-center mb-4 group-hover:scale-105 transition">
+            <i data-lucide="trending-up" class="w-6 h-6"></i>
+          </div>
+          <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">National Mandis</span>
+          <h3 class="font-display font-bold text-xl text-forest-950 mt-2">Mandi Price Index</h3>
+          <p class="text-xs text-forest-700 leading-relaxed mt-2">
+            Wholesale commodity rates across 12 states (512 rows) with interactive sorting tabs, state/variety filters, and volume analytics.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-meadow-100 flex items-center justify-between text-xs font-bold text-emerald-600">
+          <span>market_intelligence.html</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+        </div>
+      </a>
+
+      <!-- 3. Dedicated Soil Horizon & Stratification Intelligence Hub -->
+      <a href="soil_intelligence.html" class="bg-white rounded-3xl p-6 border border-emerald-300 hover:border-emerald-500 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group no-underline text-inherit relative overflow-hidden">
+        <div class="absolute top-0 right-0 bg-gradient-to-l from-emerald-500 to-lime-400 text-forest-950 font-mono text-[9px] font-extrabold px-3 py-0.5 rounded-bl-xl uppercase tracking-wider">
+          ● Dedicated Soil Hub
+        </div>
+        <div>
+          <div class="w-12 h-12 rounded-2xl bg-forest-900 text-lime-400 flex items-center justify-center mb-4 group-hover:scale-105 transition">
+            <i data-lucide="layers" class="w-6 h-6"></i>
+          </div>
+          <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">Soil Stratification</span>
+          <h3 class="font-display font-bold text-xl text-forest-950 mt-2">Soil Horizon Intelligence</h3>
+          <p class="text-xs text-forest-700 leading-relaxed mt-2">
+            Dedicated multi-horizon soil chemical matrix across 3 landscape contours (Top, Slope, Depression) and 4 depth horizons (0-90cm). Features depth curves, EC salinity analysis, and lab links.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-meadow-100 flex items-center justify-between text-xs font-bold text-emerald-600">
+          <span>soil_intelligence.html</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+        </div>
+      </a>
+
+      <!-- 3. Live Weather & Soil Intelligence (AgroMonitoring API) -->
+      <a href="weather_intelligence.html" class="bg-white rounded-3xl p-6 border border-meadow-200 hover:border-emerald-500 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group no-underline text-inherit">
+        <div>
+          <div class="w-12 h-12 rounded-2xl bg-forest-800 text-lime-400 flex items-center justify-center mb-4 group-hover:scale-105 transition">
+            <i data-lucide="cloud-sun" class="w-6 h-6"></i>
+          </div>
+          <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">Agro-Meteorology</span>
+          <h3 class="font-display font-bold text-xl text-forest-950 mt-2">Weather & Soil Intelligence</h3>
+          <p class="text-xs text-forest-700 leading-relaxed mt-2">
+            Connected to your live AgroMonitoring API. Instant search-as-you-type autocomplete, GPS detection, 10cm soil moisture, 5-day rain trend charts, and advisories.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-meadow-100 flex items-center justify-between text-xs font-bold text-emerald-600">
+          <span>weather_intelligence.html</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+        </div>
+      </a>
+
+      <!-- 2. Crop Lifecycle -->
+      <a href="crop_lifecycle.html" class="bg-white rounded-3xl p-6 border border-meadow-200 hover:border-emerald-500 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group no-underline text-inherit">
+        <div>
+          <div class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center mb-4 group-hover:scale-105 transition">
+            <i data-lucide="calendar" class="w-6 h-6"></i>
+          </div>
+          <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">Operations</span>
+          <h3 class="font-display font-bold text-xl text-forest-950 mt-2">Crop Lifecycle Planner</h3>
+          <p class="text-xs text-forest-700 leading-relaxed mt-2">
+            Interactive phenological pipeline (Prepare, Sow, Nurture, Harvest), multi-crop selector, local-storage checklist, and yield estimator.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-meadow-100 flex items-center justify-between text-xs font-bold text-emerald-600">
+          <span>crop_lifecycle.html</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+        </div>
+      </a>
+
+      <!-- 3. Chemistry Lab -->
+      <a href="chemistry_lab.html" class="bg-white rounded-3xl p-6 border border-meadow-200 hover:border-emerald-500 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group no-underline text-inherit">
+        <div>
+          <div class="w-12 h-12 rounded-2xl bg-forest-800 text-sprout-300 flex items-center justify-center mb-4 group-hover:scale-105 transition">
+            <i data-lucide="flask-conical" class="w-6 h-6"></i>
+          </div>
+          <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">Diagnostics</span>
+          <h3 class="font-display font-bold text-xl text-forest-950 mt-2">Subsurface Chemistry Lab</h3>
+          <p class="text-xs text-forest-700 leading-relaxed mt-2">
+            Soil pH & nitrate diagnostic gauges, water salinity EC checks, interactive N-P-K stoichiometry sliders, and organic bio-fertilizer recipe generator.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-meadow-100 flex items-center justify-between text-xs font-bold text-emerald-600">
+          <span>chemistry_lab.html</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+        </div>
+      </a>
+
+      <!-- 4. Precision Drip -->
+      <a href="precision_drip.html" class="bg-white rounded-3xl p-6 border border-meadow-200 hover:border-emerald-500 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group no-underline text-inherit">
+        <div>
+          <div class="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center mb-4 group-hover:scale-105 transition">
+            <i data-lucide="droplet" class="w-6 h-6"></i>
+          </div>
+          <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">Hydraulics</span>
+          <h3 class="font-display font-bold text-xl text-forest-950 mt-2">Precision Drip Architecture</h3>
+          <p class="text-xs text-forest-700 leading-relaxed mt-2">
+            Interactive root zone capillary moisture simulator with flow slider, dual-pane Flood vs Drip shift, telemetry inspector, and farm ROI calculator.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-meadow-100 flex items-center justify-between text-xs font-bold text-emerald-600">
+          <span>precision_drip.html</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+        </div>
+      </a>
+
+      <!-- 5. Regenerative Soil -->
+      <a href="regenerative_soil.html" class="bg-white rounded-3xl p-6 border border-meadow-200 hover:border-emerald-500 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group no-underline text-inherit">
+        <div>
+          <div class="w-12 h-12 rounded-2xl bg-[#3E2723] text-lime-400 flex items-center justify-center mb-4 group-hover:scale-105 transition">
+            <i data-lucide="layers" class="w-6 h-6"></i>
+          </div>
+          <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">Soil Science</span>
+          <h3 class="font-display font-bold text-xl text-forest-950 mt-2">Regenerative Soil Cycles</h3>
+          <p class="text-xs text-forest-700 leading-relaxed mt-2">
+            Living Soil vs Dead Dirt canvas simulator with glowing mycorrhizal hyphae particles, sticky subterranean depth meter, and taproot timeline.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-meadow-100 flex items-center justify-between text-xs font-bold text-emerald-600">
+          <span>regenerative_soil.html</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+        </div>
+      </a>
+
+      <!-- 6. About Us -->
+      <a href="about_us.html" class="bg-white rounded-3xl p-6 border border-meadow-200 hover:border-emerald-500 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group no-underline text-inherit">
+        <div>
+          <div class="w-12 h-12 rounded-2xl bg-forest-900 text-emerald-400 flex items-center justify-center mb-4 group-hover:scale-105 transition">
+            <i data-lucide="shield-check" class="w-6 h-6"></i>
+          </div>
+          <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">Philosophy</span>
+          <h3 class="font-display font-bold text-xl text-forest-950 mt-2">Our Mission & Team</h3>
+          <p class="text-xs text-forest-700 leading-relaxed mt-2">
+            Interactive 3D hover pop-out value cards with expandable detail drawers, agronomy leadership profiles, and core biological commitments.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-meadow-100 flex items-center justify-between text-xs font-bold text-emerald-600">
+          <span>about_us.html</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+        </div>
+      </a>
+
+      <!-- 7. Portal Sign-In -->
+      <a href="login.html" class="bg-white rounded-3xl p-6 border border-meadow-200 hover:border-emerald-500 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group no-underline text-inherit">
+        <div>
+          <div class="w-12 h-12 rounded-2xl bg-emerald-700 text-lime-300 flex items-center justify-center mb-4 group-hover:scale-105 transition">
+            <i data-lucide="lock" class="w-6 h-6"></i>
+          </div>
+          <span class="text-[10px] font-mono font-bold uppercase tracking-widest text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">Authentication</span>
+          <h3 class="font-display font-bold text-xl text-forest-950 mt-2">Farmer Portal Sign-In</h3>
+          <p class="text-xs text-forest-700 leading-relaxed mt-2">
+            Clean botanical login interface with floating inputs, password unmasking, farm node memory, and quick direct dashboard launcher.
+          </p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-meadow-100 flex items-center justify-between text-xs font-bold text-emerald-600">
+          <span>login.html</span>
+          <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+        </div>
+      </a>
+
+    </div>
+
+  </main>
+
+  <footer class="bg-white border-t border-meadow-200 py-8 text-center text-xs text-forest-700">
+    <p>© 2026 AgriBot Agri-Systems. Complete Agricultural & Botanical UI Design Suite.</p>
+  </footer>
+
+  <script>
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  </script>
+
+  <!-- ===== AGRIBOT GLOBAL UI ENHANCEMENT SCRIPTS ===== -->
+  <script>
+    // ==========================================
+    // 1. DARK MODE TOGGLE
+    // ==========================================
+    (function enforceCleanTheme() {
+      // Force clean, high-contrast botanical theme (site is designed for light mode)
+      document.documentElement.classList.remove('dark');
+      if (document.body) document.body.classList.remove('dark');
+      try {
+        localStorage.removeItem('agribot_dark_mode');
+      } catch (e) {}
+    })();
+
+    function toggleDarkMode() {
+      // Theme locked to crisp botanical mode for optimal contrast
+      document.documentElement.classList.remove("dark");
+    }
+
+    // ==========================================
+    // 3. SCROLL-TRIGGERED REVEAL ANIMATIONS
+    // ==========================================
+    /* Scroll reveal observer disabled to ensure all content stays 100% visible */
+
+    // ==========================================
+    // 5. RIPPLE EFFECT ON BUTTONS
+    // ==========================================
+    (function initRipple() {
+      document.addEventListener('click', function(e) {
+        const btn = e.target.closest('button, a.px-4, a.px-5, a.px-7, [onclick]');
+        if (!btn || btn.closest('#agroai-messages')) return;
+
+        btn.style.position = btn.style.position || 'relative';
+        btn.style.overflow = 'hidden';
+
+        const circle = document.createElement('span');
+        circle.classList.add('ripple-circle');
+        const rect = btn.getBoundingClientRect();
+        const diameter = Math.max(rect.width, rect.height) * 2;
+        circle.style.width = circle.style.height = diameter + 'px';
+        circle.style.left = (e.clientX - rect.left - diameter / 2) + 'px';
+        circle.style.top = (e.clientY - rect.top - diameter / 2) + 'px';
+
+        btn.appendChild(circle);
+        circle.addEventListener('animationend', function() { circle.remove(); });
+      });
+    })();
+  </script>
+
+</body>
+</html>

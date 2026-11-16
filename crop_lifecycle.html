@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crop Lifecycle Planner — AgriBot</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts: Plus Jakarta Sans, Outfit & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Outfit"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            forest: {
+              950: '#04140A',
+              900: '#092414',
+              850: '#0F331E',
+              800: '#144227',
+              700: '#1B5E38',
+              600: '#227D4C',
+            },
+            emerald: {
+              500: '#10B981',
+              400: '#34D399',
+            },
+            sprout: {
+              300: '#86EFAC',
+              400: '#4ADE80',
+              500: '#22C55E',
+            },
+            lime: {
+              300: '#E4FA8E',
+              400: '#CFF632',
+              500: '#B4E618',
+            },
+            meadow: {
+              50: '#F7FAF8',
+              100: '#EEF5F0',
+              200: '#DCECE0',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- ===== AGRIBOT GLOBAL UI ENHANCEMENTS ===== -->
+  <style>
+    /* ==========================================
+       1. DARK MODE — CSS Custom Properties
+       ========================================== */
+    :root {
+      --bg-primary: #F8FAF9;
+      --bg-card: #FFFFFF;
+      --bg-header: rgba(255,255,255,0.92);
+      --text-primary: #092414;
+      --text-secondary: #3B6B4A;
+      --border-primary: #DCECE0;
+      --border-subtle: #EEF5F0;
+      --shadow-card: 0 4px 24px rgba(9,36,20,0.07);
+      --bg-input: #F0F5F1;
+    }
+    .dark {
+      --bg-primary: #0A1A10;
+      --bg-card: #112A18;
+      --bg-header: rgba(10,26,16,0.95);
+      --text-primary: #E8F5EC;
+      --text-secondary: #A3C9B0;
+      --border-primary: #1E3D28;
+      --border-subtle: #162E1E;
+      --shadow-card: 0 4px 24px rgba(0,0,0,0.35);
+      --bg-input: #162E1E;
+    }
+
+    /* Smooth transition on theme change */
+    body, header, main, section, footer, .dark-transition {
+      transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+    }
+
+    /* Dark mode overrides for common elements */
+    /* Dark mode color inversion removed — site is styled for crisp botanical light theme */
+    .dark body, body.dark { background-color: #F8FAF9 !important; color: #092414 !important; }
+    .dark header { background: rgba(255,255,255,0.95) !important; border-color: #DCECE0 !important; }
+    .dark main { color: inherit; }
+    .dark section { border-color: #DCECE0 !important; }
+
+    /* Dark Mode Toggle Button */
+    .dark-mode-toggle {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border-primary);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .dark-mode-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 12px rgba(163,230,53,0.3);
+    }
+    .dark-mode-toggle .icon-sun,
+    .dark-mode-toggle .icon-moon {
+      position: absolute;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
+    }
+    .dark-mode-toggle .icon-sun  { opacity: 1; transform: rotate(0deg) scale(1); }
+    .dark-mode-toggle .icon-moon { opacity: 0; transform: rotate(-90deg) scale(0.5); }
+    .dark .dark-mode-toggle .icon-sun  { opacity: 0; transform: rotate(90deg) scale(0.5); }
+    .dark .dark-mode-toggle .icon-moon { opacity: 1; transform: rotate(0deg) scale(1); }
+    .dark .dark-mode-toggle {
+      background: #1E3D28;
+      border-color: #2D5A3A;
+      color: #A3E635;
+    }
+
+        /* Page load smooth fade (NO transform on body) */
+    @keyframes pageFadeIn { from { opacity: 0.92; } to { opacity: 1; } }
+    body { animation: pageFadeIn 0.2s ease-out; }
+
+    /* ==========================================
+       3. SCROLL-TRIGGERED REVEAL ANIMATIONS
+       ========================================== */
+    .scroll-reveal {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .scroll-reveal.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ==========================================
+       4. TOOLTIP POPOVERS
+       ========================================== */
+    .agri-tooltip {
+      position: relative;
+    }
+    .agri-tooltip::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(6px);
+      background: #092414;
+      color: #E8F5EC;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.5;
+      padding: 8px 12px;
+      border-radius: 10px;
+      white-space: nowrap;
+      max-width: 280px;
+      white-space: normal;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 100;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+    .agri-tooltip::before {
+      content: '';
+      position: absolute;
+      bottom: calc(100% + 2px);
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #092414;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      z-index: 100;
+    }
+    .agri-tooltip:hover::after,
+    .agri-tooltip:hover::before {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .agri-tooltip:hover::before {
+      transform: translateX(-50%);
+    }
+    .dark .agri-tooltip::after {
+      background: #A3E635;
+      color: #052E16;
+    }
+    .dark .agri-tooltip::before {
+      border-top-color: #A3E635;
+    }
+
+    /* ==========================================
+       5. RIPPLE EFFECT ON BUTTONS
+       ========================================== */
+    .ripple-host {
+      position: relative;
+      overflow: hidden;
+    }
+    .ripple-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(163, 230, 53, 0.35);
+      transform: scale(0);
+      animation: rippleExpand 0.5s ease-out forwards;
+      pointer-events: none;
+    }
+    .dark .ripple-circle {
+      background: rgba(163, 230, 53, 0.2);
+    }
+    @keyframes rippleExpand {
+      to { transform: scale(4); opacity: 0; }
+    }
+
+    /* ==========================================
+       6. FLOATING SCROLL-TO-BOTTOM PILL (Chat)
+       ========================================== */
+    .scroll-bottom-pill {
+      position: absolute;
+      bottom: 72px;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: #092414;
+      color: #A3E635;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      border: 1.5px solid rgba(163,230,53,0.3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .scroll-bottom-pill.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+    .scroll-bottom-pill:hover {
+      background: #144227;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    }
+  </style>
+
+</head>
+<body class="bg-meadow-50 text-forest-900 font-sans antialiased selection:bg-lime-400 selection:text-forest-950 min-h-screen flex flex-col">
+
+  <!-- ================= NAVBAR ================= -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-meadow-200">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <!-- Brand -->
+      <a href="chatbot_page.html" class="flex items-center gap-3 no-underline group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-forest-900 to-forest-700 flex items-center justify-center text-lime-400 shadow-md group-hover:scale-105 transition">
+          <i data-lucide="sprout" class="w-6 h-6"></i>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-display font-black text-2xl tracking-tight text-forest-950 leading-none">AgriBot</span>
+          <span class="text-[10px] font-extrabold tracking-widest text-emerald-600 uppercase mt-0.5">Crop Operations</span>
+        </div>
+      </a>
+
+      <!-- Nav links -->
+      <nav class="hidden md:flex items-center gap-1.5 bg-meadow-100/90 border border-meadow-200 rounded-full px-3 py-1.5 backdrop-blur-md">
+        <a href="chatbot_page.html" class="px-4 py-2 rounded-full text-xs font-semibold text-forest-700 hover:text-forest-950 transition flex items-center gap-1.5">
+          <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i> Command Center
+        </a>
+        <a href="market_intelligence.html" class="px-4 py-2 rounded-full text-xs font-semibold text-forest-700 hover:text-forest-950 transition flex items-center gap-1.5">
+          <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> Mandi Prices
+        </a>
+        <a href="soil_intelligence.html" class="px-4 py-2 rounded-full text-xs font-semibold text-forest-700 hover:text-forest-950 transition flex items-center gap-1.5">
+          <i data-lucide="layers" class="w-3.5 h-3.5 text-forest-600"></i> Soil Intelligence
+        </a>
+        <a href="weather_intelligence.html" class="px-4 py-2 rounded-full text-xs font-semibold text-forest-700 hover:text-forest-950 transition flex items-center gap-1.5">
+          <i data-lucide="cloud-sun" class="w-3.5 h-3.5 text-forest-600"></i> Weather & Soil
+        </a>
+        <a href="crop_lifecycle.html" class="px-4 py-2 rounded-full text-xs font-bold bg-white text-forest-950 shadow-sm border border-meadow-200 transition flex items-center gap-1.5">
+          <i data-lucide="calendar" class="w-3.5 h-3.5 text-emerald-600"></i> Crop Lifecycle
+        </a>
+        <a href="chemistry_lab.html" class="px-4 py-2 rounded-full text-xs font-semibold text-forest-700 hover:text-forest-950 transition flex items-center gap-1.5">
+          <i data-lucide="flask-conical" class="w-3.5 h-3.5"></i> Chemistry Lab
+        </a>
+        <a href="about_us.html" class="px-4 py-2 rounded-full text-xs font-semibold text-forest-700 hover:text-forest-950 transition flex items-center gap-1.5">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Mission
+        </a>
+      </nav>
+
+      <a href="chatbot_page.html" class="flex items-center gap-2 text-xs font-bold bg-forest-900 text-lime-400 px-4 py-2 rounded-full hover:bg-forest-800 transition">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Ask AgroAI
+      </a>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <main class="flex-1 max-w-7xl mx-auto px-6 py-12 w-full">
+    
+    <!-- Top Header & Crop Selector -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-xs font-bold text-emerald-800 uppercase tracking-widest mb-3 border border-emerald-500/20">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          Phenological Planning Suite
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-display font-black text-forest-950 tracking-tight">
+          Crop Lifecycle Architecture
+        </h1>
+        <p class="text-forest-800/80 text-base mt-2 max-w-2xl">
+          Track stage-by-stage agronomic requirements, calculate yield projections, and synchronize soil inputs from seeding to harvest.
+        </p>
+      </div>
+
+      <div class="bg-white p-3 rounded-2xl border border-meadow-200 shadow-sm flex items-center gap-3">
+        <label for="crop" class="text-xs font-bold text-forest-800 uppercase tracking-wider pl-2">Active Crop:</label>
+        <select id="crop" class="bg-meadow-50 border border-meadow-200 text-forest-950 font-bold text-sm rounded-xl px-4 py-2.5 outline-none focus:border-emerald-500 cursor-pointer">
+          <option value="wheat">🌾 Hard Winter Wheat</option>
+          <option value="rice">🍚 Paddy Rice</option>
+          <option value="cotton">🌱 High-Grade Cotton</option>
+          <option value="tomato">🍅 Greenhouse Tomato</option>
+          <option value="almonds">🌰 Almond Orchards</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 4 Key Telemetry Tiles -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+      <div class="bg-white rounded-2xl p-5 border border-meadow-200 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs font-bold text-forest-700 uppercase tracking-wider">Total Duration</p>
+          <p id="duration" class="font-mono text-2xl font-black text-forest-950 mt-1">120 Days</p>
+          <span class="text-[11px] text-emerald-600 font-semibold">Seeding to harvest</span>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-meadow-100 flex items-center justify-center text-emerald-600">
+          <i data-lucide="clock" class="w-6 h-6"></i>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-5 border border-meadow-200 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs font-bold text-forest-700 uppercase tracking-wider">Soil Moisture Target</p>
+          <p class="font-mono text-2xl font-black text-forest-950 mt-1">34.5% VWC</p>
+          <span class="text-[11px] text-emerald-600 font-semibold">Optimal aerobic band</span>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-meadow-100 flex items-center justify-center text-blue-500">
+          <i data-lucide="droplets" class="w-6 h-6"></i>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-5 border border-meadow-200 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs font-bold text-forest-700 uppercase tracking-wider">Forecast Rain (7-Day)</p>
+          <p class="font-mono text-2xl font-black text-forest-950 mt-1">18.2 mm</p>
+          <span class="text-[11px] text-emerald-600 font-semibold">Low irrigation demand</span>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-meadow-100 flex items-center justify-center text-emerald-600">
+          <i data-lucide="cloud-rain" class="w-6 h-6"></i>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-5 border border-meadow-200 shadow-sm flex items-center justify-between">
+        <div>
+          <p class="text-xs font-bold text-forest-700 uppercase tracking-wider">Upcoming Milestone</p>
+          <p id="reminder" class="font-display text-xl font-black text-forest-950 mt-1">FDR Soil Probe</p>
+          <span class="text-[11px] text-amber-600 font-semibold">Scheduled tomorrow</span>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
+          <i data-lucide="bell" class="w-6 h-6"></i>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage Progress Pipeline -->
+    <section class="bg-white rounded-3xl p-6 sm:p-8 border border-meadow-200 shadow-sm mb-10">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="font-display text-xl font-bold text-forest-950">Phenological Pipeline</h2>
+          <p class="text-xs text-forest-700">Click any stage to inspect specific agronomic tasks and required inputs.</p>
+        </div>
+        <span id="progress-label" class="font-mono text-xs font-bold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-800 border border-emerald-500/20">0% Complete</span>
+      </div>
+
+      <!-- Progress Track -->
+      <div class="w-full bg-meadow-100 h-2.5 rounded-full mb-6 overflow-hidden">
+        <div id="progress-bar" class="bg-gradient-to-r from-emerald-500 to-lime-400 h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
+      </div>
+
+      <!-- 4 Interactive Stage Buttons -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <button class="stage active text-left p-4 rounded-2xl border-2 border-emerald-600 bg-meadow-50 transition-all cursor-pointer" data-stage="prepare">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-extrabold text-emerald-700">01</span>
+            <i data-lucide="shovel" class="w-4 h-4 text-emerald-700"></i>
+          </div>
+          <h3 class="font-display font-bold text-forest-950 mt-2 text-base">Prepare Field</h3>
+          <p class="text-xs text-forest-700 mt-0.5">Days 1 - 14</p>
+        </button>
+
+        <button class="stage text-left p-4 rounded-2xl border border-meadow-200 bg-white hover:bg-meadow-50 transition-all cursor-pointer" data-stage="plant">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-extrabold text-forest-600">02</span>
+            <i data-lucide="seedling" class="w-4 h-4 text-forest-600"></i>
+          </div>
+          <h3 class="font-display font-bold text-forest-950 mt-2 text-base">Sow & Plant</h3>
+          <p class="text-xs text-forest-700 mt-0.5">Days 15 - 21</p>
+        </button>
+
+        <button class="stage text-left p-4 rounded-2xl border border-meadow-200 bg-white hover:bg-meadow-50 transition-all cursor-pointer" data-stage="nurture">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-extrabold text-forest-600">03</span>
+            <i data-lucide="droplet" class="w-4 h-4 text-forest-600"></i>
+          </div>
+          <h3 class="font-display font-bold text-forest-950 mt-2 text-base">Nurture & Fertigate</h3>
+          <p class="text-xs text-forest-700 mt-0.5">Days 22 - 100</p>
+        </button>
+
+        <button class="stage text-left p-4 rounded-2xl border border-meadow-200 bg-white hover:bg-meadow-50 transition-all cursor-pointer" data-stage="harvest">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-xs font-extrabold text-forest-600">04</span>
+            <i data-lucide="package-check" class="w-4 h-4 text-forest-600"></i>
+          </div>
+          <h3 class="font-display font-bold text-forest-950 mt-2 text-base">Harvest & Store</h3>
+          <p class="text-xs text-forest-700 mt-0.5">Days 101 - 120</p>
+        </button>
+      </div>
+    </section>
+
+    <!-- Stage Detail & Checklist Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
+      
+      <!-- Stage Detail Box (Left) -->
+      <section class="lg:col-span-8 bg-white rounded-3xl p-6 sm:p-8 border border-meadow-200 shadow-sm flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-6 pb-4 border-b border-meadow-100">
+            <div>
+              <span id="stage-kicker" class="text-xs font-bold uppercase tracking-wider text-emerald-600">Stage 01</span>
+              <h2 id="stage-title" class="font-display text-2xl sm:text-3xl font-black text-forest-950 mt-1">Prepare your field</h2>
+            </div>
+            <span id="stage-timing" class="font-mono text-xs font-bold px-3 py-1.5 rounded-full bg-meadow-100 text-forest-900 border border-meadow-200">Days 1-14</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-meadow-50 p-4 rounded-2xl border border-meadow-100">
+              <h3 class="font-bold text-forest-950 text-sm mb-3 flex items-center gap-2">
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i> Key Agronomic Tasks
+              </h3>
+              <ul id="stage-tasks" class="space-y-2 text-xs text-forest-800 leading-relaxed"></ul>
+            </div>
+
+            <div class="bg-meadow-50 p-4 rounded-2xl border border-meadow-100">
+              <h3 class="font-bold text-forest-950 text-sm mb-3 flex items-center gap-2">
+                <i data-lucide="package" class="w-4 h-4 text-emerald-600"></i> Inputs Required
+              </h3>
+              <ul id="stage-inputs" class="space-y-2 text-xs text-forest-800 leading-relaxed"></ul>
+            </div>
+
+            <div class="bg-amber-500/10 p-4 rounded-2xl border border-amber-500/20">
+              <h3 class="font-bold text-amber-900 text-sm mb-3 flex items-center gap-2">
+                <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i> Critical Pitfall to Avoid
+              </h3>
+              <p id="stage-mistake" class="text-xs text-amber-900/90 leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 pt-4 border-t border-meadow-100 flex items-center justify-between text-xs text-forest-700">
+          <span>Need custom timing advice? Consult <a href="chatbot_page.html" class="text-emerald-600 font-bold hover:underline">AgroAI Assistant</a></span>
+          <span class="font-mono text-emerald-600 font-bold">● Telemetry Verified</span>
+        </div>
+      </section>
+
+      <!-- Checklist & Yield (Right) -->
+      <aside class="lg:col-span-4 space-y-6">
+        
+        <!-- Task Checklist Card -->
+        <section class="bg-white rounded-3xl p-6 border border-meadow-200 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-display text-lg font-bold text-forest-950">Field Checklist</h2>
+            <span id="check-count" class="text-xs font-mono font-bold text-forest-600">0 of 5</span>
+          </div>
+          <div id="checklist" class="space-y-2.5 text-xs text-forest-800"></div>
+        </section>
+
+        <!-- Yield Estimator Card -->
+        <section class="bg-gradient-to-br from-forest-950 to-forest-900 text-white rounded-3xl p-6 shadow-md border border-forest-800">
+          <div class="flex items-center gap-2 text-xs font-bold text-lime-400 uppercase tracking-wider mb-2">
+            <i data-lucide="calculator" class="w-4 h-4"></i> Yield Modeling
+          </div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Field Size (Acres):</label>
+          <input id="acres" class="w-full bg-forest-850 border border-forest-700 rounded-xl px-3 py-2 text-sm text-white font-mono font-bold outline-none focus:border-lime-400" type="number" min="0.1" value="5" step="0.5">
+          
+          <div class="mt-4 pt-4 border-t border-white/10">
+            <p class="text-xs text-slate-300">Projected Harvest Volume:</p>
+            <p id="yield" class="font-mono text-3xl font-black text-lime-400 mt-1">12.5 tonnes</p>
+            <p class="text-[11px] text-slate-400 mt-1">Reflects completion rate & standard regional agronomy models.</p>
+          </div>
+        </section>
+
+      </aside>
+    </div>
+
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="bg-white border-t border-meadow-200 py-8 text-center text-xs text-forest-700">
+    <p>© 2026 AgriBot Agri-Tech. Phenological Crop Planning System.</p>
+  </footer>
+
+  <script>
+    const plans = {
+      wheat: { duration: "120 Days", base: 2.5, stages: { prepare: ["Soil pH & nitrate testing", "Stubble incorporation & bed leveling", "Aerobic compost application"], plant: ["Certified seed bio-fungicide treatment", "Calibrate seed drill (20 cm rows)", "Check topsoil temperature (>8°C)"], nurture: ["Crown root initiation irrigation", "LoRaWAN sensor moisture scouting", "Nitrogen top-dressing via fertigation"], harvest: ["Check grain moisture (<14%)", "Calibrate combine header speed", "Dispatch to clean dry grain silos"] } },
+      rice: { duration: "150 Days", base: 3.2, stages: { prepare: ["Level nursery bed with precision laser", "Check water source salinity (EC < 1.0)", "Apply mature cow-dung compost"], plant: ["Transplant seedlings at 4-leaf stage", "Maintain 2cm shallow water blanket", "Inoculate Azospirillum bio-fertilizer"], nurture: ["Split nitrogen application at panicle", "Scout for leaf blast and stem borer", "Alternate wetting and drying (AWD)"], harvest: ["Drain field 10 days before harvest", "Harvest when 85% grains turn golden", "Sun dry to 12% storage moisture"] } },
+      cotton: { duration: "180 Days", base: 1.4, stages: { prepare: ["Deep chisel plow hardpan layers", "Test soil potassium & boron levels", "Lay subsurface drip lateral lines"], plant: ["Treat seed against sucking pests", "Set precision spacing (90 x 30 cm)", "Check soil germination moisture"], nurture: ["Monitor bollworm pheromone traps", "Micro-dose potassium at flowering", "Apply micronutrient foliar spray"], harvest: ["Defoliate before mechanical picking", "Harvest fully opened white bolls", "Store in well-ventilated dry sheds"] } },
+      tomato: { duration: "100 Days", base: 4.1, stages: { prepare: ["Form 20cm raised cultivation beds", "Sterilize nursery substrate with steam", "Incorporate compost & neem cake"], plant: ["Harden seedlings before planting", "Erect bamboo/wire trellis system", "Install pressure-compensating drippers"], nurture: ["Calcium micro-injection against rot", "Prune secondary sucker branches", "Scout for early and late blight"], harvest: ["Pick at breaker or pink color stage", "Sort by size in ventilated crates", "Pre-cool before cold-chain transit"] } },
+      almonds: { duration: "240 Days", base: 1.8, stages: { prepare: ["Winter orchard sanitation & pruning", "Subsurface soil drainage check", "Bee hive placement for pollination"], plant: ["Dormant spray application", "Calibrate drip emitters (1.6 L/h)", "Check rootstock graft union health"], nurture: ["Spring fertigation (Nitrogen & Zinc)", "Hull split spray for navel orangeworm", "Maintain cover crop between tree rows"], harvest: ["Mechanical tree shaking at hull split", "Orchard floor drying for 7-10 days", "Sweep and pickup into transport bins"] } }
+    };
+
+    const details = {
+      prepare: ["Prepare your field", "Days 1-14", "Soil testing, baseline compost, and tillage control.", "pH kit, compost, field map", "Skipping soil testing causes unbalanced fertilizer expenditure."],
+      plant: ["Sow with precision", "Days 15-21", "Establish seed viability, even spacing, and initial moisture.", "Certified seed, bio-inoculant, drill", "Planting in saturated soil causes seed rot."],
+      nurture: ["Nurture the crop", "Days 22-100", "Maintain closed-loop hydration and targeted micro-fertigation.", "Drip lines, FDR sensor, scout sheet", "Over-irrigation suffocates roots and breeds pathogens."],
+      harvest: ["Harvest and store", "Days 101-120", "Maximize crop value with timely collection and storage.", "Moisture meter, clean crates, transport", "Storing wet produce triggers mold and mycotoxin contamination."]
+    };
+
+    let stage = "prepare", crop = "wheat";
+    const checklistItems = ["Soil pH & EC Tested", "Certified Seeds Sown", "Subsurface Drip Active", "Disease Scouting Completed", "Harvest Logistics Booked"];
+
+    function renderStage() {
+      const d = details[stage], p = plans[crop];
+      const stageIdx = ["prepare", "plant", "nurture", "harvest"].indexOf(stage) + 1;
+      document.getElementById("stage-kicker").textContent = "Stage " + stageIdx.toString().padStart(2, "0");
+      document.getElementById("stage-title").textContent = d[0];
+      document.getElementById("stage-timing").textContent = d[1];
+      document.getElementById("stage-mistake").textContent = d[4];
+      
+      document.getElementById("stage-tasks").innerHTML = p.stages[stage].map(x => `<li class="flex items-start gap-1.5"><span class="text-emerald-600 font-bold">•</span> ${x}</li>`).join("");
+      document.getElementById("stage-inputs").innerHTML = (stage === "prepare" ? ["Soil pH/EC Test Kit", "Aged Compost / Manure", "Laser Leveling Gear"] : stage === "plant" ? ["Certified Hybrid Seed", "Bio-Fungicide Inoculant", "Precision Planter"] : stage === "nurture" ? ["LoRaWAN Moisture Probes", "Water-Soluble NPK", "Pheromone Traps"] : ["Grain Moisture Meter", "Clean Food-Grade Crates", "Transport Contract"]).map(x => `<li class="flex items-start gap-1.5"><span class="text-emerald-600 font-bold">•</span> ${x}</li>`).join("");
+
+      document.querySelectorAll(".stage").forEach(el => {
+        const isActive = el.dataset.stage === stage;
+        el.classList.toggle("active", isActive);
+        if (isActive) {
+          el.className = "stage active text-left p-4 rounded-2xl border-2 border-emerald-600 bg-meadow-50 transition-all cursor-pointer";
+        } else {
+          el.className = "stage text-left p-4 rounded-2xl border border-meadow-200 bg-white hover:bg-meadow-50 transition-all cursor-pointer";
+        }
+      });
+    }
+
+    function renderChecklist() {
+      const checked = JSON.parse(localStorage.getItem("cropTasks-" + crop) || "[]");
+      document.getElementById("checklist").innerHTML = checklistItems.map((item, index) => {
+        const selected = checked.includes(index);
+        return `
+          <label class="flex items-center gap-3 p-3 rounded-xl border ${selected ? 'bg-emerald-50 border-emerald-200 text-emerald-900 font-bold' : 'bg-meadow-50 border-meadow-100'} cursor-pointer hover:border-emerald-300 transition">
+            <input type="checkbox" data-index="${index}" ${selected ? 'checked' : ''} class="w-4 h-4 accent-emerald-600 rounded">
+            <span class="${selected ? 'line-through opacity-70' : ''}">${item}</span>
+          </label>
+        `;
+      }).join("");
+
+      document.querySelectorAll("#checklist input").forEach(input => {
+        input.onchange = () => {
+          const completed = [...document.querySelectorAll("#checklist input:checked")].map(cb => Number(cb.dataset.index));
+          localStorage.setItem("cropTasks-" + crop, JSON.stringify(completed));
+          renderChecklist();
+        };
+      });
+
+      renderProgress(checked.length);
+    }
+
+    function renderProgress(n) {
+      const percent = Math.round((n / checklistItems.length) * 100);
+      document.getElementById("progress-bar").style.width = percent + "%";
+      document.getElementById("progress-label").textContent = percent + "% Complete";
+      document.getElementById("check-count").textContent = `${n} of ${checklistItems.length} completed`;
+      
+      const acres = Number(document.getElementById("acres").value || 0);
+      const estimatedTonnes = (acres * plans[crop].base * (0.8 + (n / checklistItems.length) * 0.2)).toFixed(1);
+      document.getElementById("yield").textContent = estimatedTonnes + " tonnes";
+    }
+
+    document.querySelectorAll(".stage").forEach(x => {
+      x.onclick = () => {
+        stage = x.dataset.stage;
+        renderStage();
+      };
+    });
+
+    document.getElementById("crop").onchange = e => {
+      crop = e.target.value;
+      document.getElementById("duration").textContent = plans[crop].duration;
+      renderStage();
+      renderChecklist();
+    };
+
+    document.getElementById("acres").oninput = () => {
+      renderProgress(document.querySelectorAll("#checklist input:checked").length);
+    };
+
+    renderStage();
+    renderChecklist();
+
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  </script>
+
+  <!-- ===== AGRIBOT GLOBAL UI ENHANCEMENT SCRIPTS ===== -->
+  <script>
+    // ==========================================
+    // 1. DARK MODE TOGGLE
+    // ==========================================
+    (function enforceCleanTheme() {
+      // Force clean, high-contrast botanical theme (site is designed for light mode)
+      document.documentElement.classList.remove('dark');
+      if (document.body) document.body.classList.remove('dark');
+      try {
+        localStorage.removeItem('agribot_dark_mode');
+      } catch (e) {}
+    })();
+
+    function toggleDarkMode() {
+      // Theme locked to crisp botanical mode for optimal contrast
+      document.documentElement.classList.remove("dark");
+    }
+
+    // ==========================================
+    // 3. SCROLL-TRIGGERED REVEAL ANIMATIONS
+    // ==========================================
+    /* Scroll reveal observer disabled to ensure all content stays 100% visible */
+
+    // ==========================================
+    // 5. RIPPLE EFFECT ON BUTTONS
+    // ==========================================
+    (function initRipple() {
+      document.addEventListener('click', function(e) {
+        const btn = e.target.closest('button, a.px-4, a.px-5, a.px-7, [onclick]');
+        if (!btn || btn.closest('#agroai-messages')) return;
+
+        btn.style.position = btn.style.position || 'relative';
+        btn.style.overflow = 'hidden';
+
+        const circle = document.createElement('span');
+        circle.classList.add('ripple-circle');
+        const rect = btn.getBoundingClientRect();
+        const diameter = Math.max(rect.width, rect.height) * 2;
+        circle.style.width = circle.style.height = diameter + 'px';
+        circle.style.left = (e.clientX - rect.left - diameter / 2) + 'px';
+        circle.style.top = (e.clientY - rect.top - diameter / 2) + 'px';
+
+        btn.appendChild(circle);
+        circle.addEventListener('animationend', function() { circle.remove(); });
+      });
+    })();
+  </script>
+
+</body>
+</html>

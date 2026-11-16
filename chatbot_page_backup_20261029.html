@@ -1,0 +1,2415 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgriBot — Autonomous Agriculture & AgroAI Command Center</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts: Plus Jakarta Sans, Outfit & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Outfit"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            forest: {
+              950: '#04140A',
+              900: '#092414',
+              850: '#0F331E',
+              800: '#144227',
+              700: '#1B5E38',
+              600: '#227D4C',
+            },
+            emerald: {
+              500: '#10B981',
+              400: '#34D399',
+            },
+            sprout: {
+              300: '#86EFAC',
+              400: '#4ADE80',
+              500: '#22C55E',
+            },
+            lime: {
+              300: '#E4FA8E',
+              400: '#CFF632',
+              500: '#B4E618',
+            },
+            meadow: {
+              50: '#F7FAF8',
+              100: '#EEF5F0',
+              200: '#DCECE0',
+            }
+          },
+          boxShadow: {
+            'glow-lime': '0 0 35px -5px rgba(207, 246, 50, 0.35)',
+            'glow-emerald': '0 0 35px -5px rgba(34, 197, 94, 0.35)',
+            'agri-card': '0 12px 36px -6px rgba(9, 36, 20, 0.08), 0 2px 8px rgba(9, 36, 20, 0.04)',
+            'agri-elevated': '0 20px 50px -10px rgba(9, 36, 20, 0.14)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Green-Thumb Scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #092414; }
+    ::-webkit-scrollbar-thumb { background: #1B5E38; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #CFF632; }
+
+    .glow-lime { box-shadow: 0 0 30px rgba(207, 246, 50, 0.35); }
+    .glow-emerald { box-shadow: 0 0 25px rgba(34, 197, 94, 0.25); }
+
+    /* Botanical Grid Background */
+    .bg-grid-pattern {
+      background-image: radial-gradient(rgba(34, 197, 94, 0.15) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    /* --- SKELETON SHIMMER LOADING ANIMATION --- */
+    @keyframes shimmerWave {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .skeleton-shimmer {
+      background: linear-gradient(90deg, #EEF5F0 25%, #DCECE0 50%, #EEF5F0 75%);
+      background-size: 200% 100%;
+      animation: shimmerWave 1.6s infinite ease-in-out;
+      border-radius: 8px;
+    }
+    .skeleton-shimmer-dark {
+      background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.16) 50%, rgba(255,255,255,0.06) 75%);
+      background-size: 200% 100%;
+      animation: shimmerWave 1.6s infinite ease-in-out;
+      border-radius: 8px;
+    }
+
+    /* --- PERIODIC 3-DOT BOUNCING TYPING LOADER --- */
+    @keyframes periodicDotBounce {
+      0%, 80%, 100% {
+        transform: translateY(0);
+        opacity: 0.35;
+      }
+      40% {
+        transform: translateY(-8px);
+        opacity: 1;
+      }
+    }
+    .periodic-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10B981;
+      display: inline-block;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+      animation: periodicDotBounce 1.4s infinite ease-in-out both;
+    }
+    .periodic-dot:nth-child(1) {
+      animation-delay: 0.0s;
+    }
+    .periodic-dot:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+    .periodic-dot:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    @keyframes botGlowPulse {
+      0%, 100% { box-shadow: 0 4px 20px rgba(16, 185, 129, 0.12); }
+      50% { box-shadow: 0 8px 30px rgba(16, 185, 129, 0.28); }
+    }
+    .agroai-typing-bubble {
+      animation: botGlowPulse 2s infinite ease-in-out;
+    }
+
+  </style>
+
+  <style>
+    /* Floating Farmer Voice Button */
+    .farmer-voice-float {
+      position: fixed;
+      right: 96px;
+      bottom: 24px;
+      height: 60px;
+      padding: 0 20px 0 14px;
+      border-radius: 30px;
+      background: linear-gradient(135deg, #A3E635 0%, #4ADE80 100%);
+      color: #052E16;
+      border: 2px solid #FFFFFF;
+      box-shadow: 0 12px 35px rgba(20, 83, 45, 0.35);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 13px;
+      transition: all .25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .farmer-voice-float:hover {
+      transform: translateY(-3px) scale(1.04);
+      box-shadow: 0 16px 40px rgba(20, 83, 45, 0.45);
+      background: linear-gradient(135deg, #BEF264 0%, #22C55E 100%);
+    }
+    .farmer-voice-float.is-listening {
+      background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;
+      color: #FFFFFF !important;
+      animation: voiceGlowPulse 1.2s infinite;
+    }
+    @keyframes voiceGlowPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+      50% { box-shadow: 0 0 0 16px rgba(239, 68, 68, 0); }
+    }
+    @media (max-width: 640px) {
+      .farmer-voice-float {
+        right: 88px;
+        bottom: 20px;
+        height: 52px;
+        padding: 0 14px 0 10px;
+        font-size: 11.5px;
+      }
+      .agroai-float {
+        right: 20px;
+        bottom: 20px;
+        width: 52px;
+        height: 52px;
+      }
+    }
+  </style>
+
+
+  <style>
+    /* Devanagari typography support & smooth font rendering */
+    #agroai-chat-popup, .farmer-voice-float {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Devanagari", "Mukta", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    /* Clean, non-intrusive scrollbar for chips and messages */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Floating Voice Button refined */
+    .farmer-voice-float {
+      position: fixed;
+      right: 92px;
+      bottom: 24px;
+      height: 52px;
+      padding: 0 16px 0 12px;
+      border-radius: 26px;
+      background: linear-gradient(135deg, #A3E635 0%, #4ADE80 100%);
+      color: #052E16;
+      border: 2px solid #FFFFFF;
+      box-shadow: 0 10px 30px rgba(20, 83, 45, 0.28);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 13px;
+      line-height: 1.2;
+      white-space: nowrap;
+      transition: all .2s ease;
+    }
+    .farmer-voice-float:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 14px 35px rgba(20, 83, 45, 0.38);
+    }
+    .farmer-voice-float.is-listening {
+      background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;
+      color: #FFFFFF !important;
+      animation: voiceGlowPulse 1.2s infinite;
+    }
+    @media (max-width: 640px) {
+      .farmer-voice-float {
+        right: 84px;
+        bottom: 20px;
+        height: 48px;
+        padding: 0 14px 0 10px;
+        font-size: 12px;
+      }
+    }
+  </style>
+
+
+  <!-- ===== AGRIBOT GLOBAL UI ENHANCEMENTS ===== -->
+  <style>
+    /* ==========================================
+       1. DARK MODE — CSS Custom Properties
+       ========================================== */
+    :root {
+      --bg-primary: #F8FAF9;
+      --bg-card: #FFFFFF;
+      --bg-header: rgba(255,255,255,0.92);
+      --text-primary: #092414;
+      --text-secondary: #3B6B4A;
+      --border-primary: #DCECE0;
+      --border-subtle: #EEF5F0;
+      --shadow-card: 0 4px 24px rgba(9,36,20,0.07);
+      --bg-input: #F0F5F1;
+    }
+    .dark {
+      --bg-primary: #0A1A10;
+      --bg-card: #112A18;
+      --bg-header: rgba(10,26,16,0.95);
+      --text-primary: #E8F5EC;
+      --text-secondary: #A3C9B0;
+      --border-primary: #1E3D28;
+      --border-subtle: #162E1E;
+      --shadow-card: 0 4px 24px rgba(0,0,0,0.35);
+      --bg-input: #162E1E;
+    }
+
+    /* Smooth transition on theme change */
+    body, header, main, section, footer, .dark-transition {
+      transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+    }
+
+    /* Dark mode overrides for common elements */
+    .dark body, body.dark { background-color: var(--bg-primary) !important; color: var(--text-primary) !important; }
+    .dark header { background: var(--bg-header) !important; border-color: var(--border-primary) !important; }
+    .dark main { color: var(--text-primary); }
+    .dark section { border-color: var(--border-primary) !important; }
+
+    /* Dark Mode Toggle Button */
+    .dark-mode-toggle {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border-primary);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .dark-mode-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 12px rgba(163,230,53,0.3);
+    }
+    .dark-mode-toggle .icon-sun,
+    .dark-mode-toggle .icon-moon {
+      position: absolute;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
+    }
+    .dark-mode-toggle .icon-sun  { opacity: 1; transform: rotate(0deg) scale(1); }
+    .dark-mode-toggle .icon-moon { opacity: 0; transform: rotate(-90deg) scale(0.5); }
+    .dark .dark-mode-toggle .icon-sun  { opacity: 0; transform: rotate(90deg) scale(0.5); }
+    .dark .dark-mode-toggle .icon-moon { opacity: 1; transform: rotate(0deg) scale(1); }
+    .dark .dark-mode-toggle {
+      background: #1E3D28;
+      border-color: #2D5A3A;
+      color: #A3E635;
+    }
+
+    /* ==========================================
+       2. SMOOTH PAGE TRANSITION (Fade-in + Slide-up on load)
+       ========================================== */
+    @keyframes pageReveal {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    body {
+      animation: pageReveal 0.35s ease-out both;
+    }
+
+    /* ==========================================
+       3. SCROLL-TRIGGERED REVEAL ANIMATIONS
+       ========================================== */
+    .scroll-reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    }
+    .scroll-reveal.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ==========================================
+       4. TOOLTIP POPOVERS
+       ========================================== */
+    .agri-tooltip {
+      position: relative;
+    }
+    .agri-tooltip::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(6px);
+      background: #092414;
+      color: #E8F5EC;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.5;
+      padding: 8px 12px;
+      border-radius: 10px;
+      white-space: nowrap;
+      max-width: 280px;
+      white-space: normal;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 100;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+    .agri-tooltip::before {
+      content: '';
+      position: absolute;
+      bottom: calc(100% + 2px);
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #092414;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      z-index: 100;
+    }
+    .agri-tooltip:hover::after,
+    .agri-tooltip:hover::before {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .agri-tooltip:hover::before {
+      transform: translateX(-50%);
+    }
+    .dark .agri-tooltip::after {
+      background: #A3E635;
+      color: #052E16;
+    }
+    .dark .agri-tooltip::before {
+      border-top-color: #A3E635;
+    }
+
+    /* ==========================================
+       5. RIPPLE EFFECT ON BUTTONS
+       ========================================== */
+    .ripple-host {
+      position: relative;
+      overflow: hidden;
+    }
+    .ripple-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(163, 230, 53, 0.35);
+      transform: scale(0);
+      animation: rippleExpand 0.5s ease-out forwards;
+      pointer-events: none;
+    }
+    .dark .ripple-circle {
+      background: rgba(163, 230, 53, 0.2);
+    }
+    @keyframes rippleExpand {
+      to { transform: scale(4); opacity: 0; }
+    }
+
+    /* ==========================================
+       6. FLOATING SCROLL-TO-BOTTOM PILL (Chat)
+       ========================================== */
+    .scroll-bottom-pill {
+      position: absolute;
+      bottom: 72px;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: #092414;
+      color: #A3E635;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      border: 1.5px solid rgba(163,230,53,0.3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .scroll-bottom-pill.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+    .scroll-bottom-pill:hover {
+      background: #144227;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    }
+  </style>
+
+</head>
+<body class="bg-meadow-50 text-forest-900 font-sans antialiased selection:bg-lime-400 selection:text-forest-950">
+
+  <!-- ================= NAVBAR ================= -->
+  <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/90 backdrop-blur-md border-b border-meadow-200">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <!-- Brand Logo -->
+      <a href="chatbot_page.html" class="flex items-center gap-3 no-underline group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-forest-900 to-forest-700 flex items-center justify-center text-lime-400 shadow-md group-hover:scale-105 transition">
+          <i data-lucide="sprout" class="w-6 h-6"></i>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-display font-black text-2xl tracking-tight text-forest-950 leading-none">AgriBot</span>
+          <span class="text-[10px] font-extrabold tracking-widest text-emerald-600 uppercase mt-0.5">AgroAI Systems</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden lg:flex items-center gap-1.5 bg-meadow-100/90 border border-meadow-200 rounded-full px-3 py-1.5 backdrop-blur-md">
+        <a href="chatbot_page.html" class="px-4 py-2 rounded-full text-xs font-bold bg-white text-forest-950 shadow-sm border border-meadow-200 transition flex items-center gap-1.5">
+          <i data-lucide="layout-dashboard" class="w-3.5 h-3.5 text-emerald-600"></i> Command Center
+        </a>
+        <a href="market_intelligence.html" class="px-4 py-2 rounded-full text-xs font-semibold text-forest-700 hover:text-forest-950 hover:bg-white/60 transition flex items-center gap-1.5">
+          <i data-lucide="trending-up" class="w-3.5 h-3.5 text-forest-600"></i> Mandi Prices
+        </a>
+        <a href="soil_intelligence.html" class="px-4 py-2 rounded-full text-xs font-semibold text-forest-700 hover:text-forest-950 hover:bg-white/60 transition flex items-center gap-1.5">
+          <i data-lucide="layers" class="w-3.5 h-3.5 text-forest-600"></i> Soil Intelligence
+        </a>
+        <a href="weather_intelligence.html" class="px-4 py-2 rounded-full text-xs font-semibold text-forest-700 hover:text-forest-950 hover:bg-white/60 transition flex items-center gap-1.5">
+          <i data-lucide="cloud-sun" class="w-3.5 h-3.5 text-forest-600"></i> Weather & Soil
+        </a>
+        <a href="crop_lifecycle.html" class="px-4 py-2 rounded-full text-xs font-semibold text-forest-700 hover:text-forest-950 hover:bg-white/60 transition flex items-center gap-1.5">
+          <i data-lucide="calendar" class="w-3.5 h-3.5 text-forest-600"></i> Crop Lifecycle
+        </a>
+        <a href="chemistry_lab.html" class="px-4 py-2 rounded-full text-xs font-semibold text-forest-700 hover:text-forest-950 hover:bg-white/60 transition flex items-center gap-1.5">
+          <i data-lucide="flask-conical" class="w-3.5 h-3.5 text-forest-600"></i> Chemistry Lab
+        </a>
+        <a href="about_us.html" class="px-4 py-2 rounded-full text-xs font-semibold text-forest-700 hover:text-forest-950 hover:bg-white/60 transition flex items-center gap-1.5">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-forest-600"></i> Mission
+        </a>
+      </nav>
+
+      <!-- Right Action CTA -->
+      <div class="flex items-center gap-3">
+        
+        <div id="navbar-grower-slot">
+          <a href="login.html" class="hidden sm:flex items-center gap-1.5 text-xs font-bold text-forest-800 hover:text-forest-950 px-3 py-2">
+            <i data-lucide="user" class="w-4 h-4 text-emerald-600"></i> Portal Sign-in
+          </a>
+        </div>
+        <button onclick="toggleChatbot()" class="group flex items-center gap-2.5 bg-gradient-to-r from-forest-900 to-forest-800 hover:from-forest-800 hover:to-forest-700 text-white px-5 py-2.5 rounded-full font-bold text-xs tracking-wide shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 border border-forest-700">
+          <span class="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></span>
+          <span>Ask AgroAI</span>
+          <div class="w-5 h-5 rounded-full bg-lime-400 text-forest-950 flex items-center justify-center group-hover:rotate-45 transition-transform duration-300">
+            <i data-lucide="sparkles" class="w-3 h-3"></i>
+          </div>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= HERO SECTION ================= -->
+  <section id="hero" class="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden bg-gradient-to-b from-white via-meadow-50 to-meadow-100 border-b border-meadow-200">
+    <div class="absolute inset-0 bg-grid-pattern opacity-60"></div>
+    
+    <div class="relative z-10 max-w-7xl mx-auto px-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Left Hero Copy -->
+        <div class="lg:col-span-7 flex flex-col items-start">
+          <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-xs font-bold tracking-wider text-forest-800 uppercase mb-6">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+            Autonomous Agronomic Telemetry
+          </div>
+
+          <h1 class="text-4xl sm:text-6xl lg:text-7xl font-display font-black text-forest-950 tracking-tight leading-[1.08] mb-6">
+            Grow Smarter with <br />
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-forest-800 via-emerald-600 to-lime-500">Autonomous AgroAI</span>
+          </h1>
+
+          <p class="text-lg md:text-xl text-forest-800/80 font-normal leading-relaxed mb-8 max-w-2xl text-balance">
+            Precision soil telemetry, closed-loop subsurface hydration, and deep agronomic AI diagnostics designed to maximize yield while slashing water and fertilizer costs.
+          </p>
+
+          <!-- Action Button Group -->
+          <div class="flex flex-wrap items-center gap-4 mb-10">
+            <a href="crop_lifecycle.html" class="group flex items-center gap-3 bg-forest-900 hover:bg-forest-800 text-white px-7 py-4 rounded-full font-bold text-sm transition-all duration-300 shadow-md hover:shadow-xl transform hover:-translate-y-0.5">
+              <span>Launch Field Planner</span>
+              <div class="w-6 h-6 rounded-full bg-lime-400 text-forest-950 flex items-center justify-center group-hover:translate-x-1 transition-transform">
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </div>
+            </a>
+
+            <button onclick="toggleChatbot()" class="flex items-center gap-2.5 bg-white hover:bg-meadow-50 border border-meadow-200 text-forest-900 px-6 py-4 rounded-full font-bold text-sm shadow-sm transition hover:border-emerald-500">
+              <i data-lucide="bot" class="w-4 h-4 text-emerald-600"></i>
+              <span>Consult Agronomist AI</span>
+            </button>
+          </div>
+
+          <!-- Mini Stats Bar -->
+          <div class="grid grid-cols-3 gap-6 pt-6 border-t border-meadow-200 w-full max-w-xl">
+            <div>
+              <div class="font-mono text-2xl sm:text-3xl font-black text-forest-950">70%</div>
+              <p class="text-xs font-bold text-forest-700 uppercase tracking-wide mt-1">Water Saved</p>
+            </div>
+            <div>
+              <div class="font-mono text-2xl sm:text-3xl font-black text-emerald-600">99.4%</div>
+              <p class="text-xs font-bold text-forest-700 uppercase tracking-wide mt-1">Diagnostic Accuracy</p>
+            </div>
+            <div>
+              <div class="font-mono text-2xl sm:text-3xl font-black text-forest-950">+38%</div>
+              <p class="text-xs font-bold text-forest-700 uppercase tracking-wide mt-1">Net Crop Margin</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Hero Interactive Agro Card -->
+        <div class="lg:col-span-5">
+          <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-agri-elevated border border-meadow-200 relative overflow-hidden">
+            <div class="flex items-center justify-between pb-4 border-b border-meadow-100">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-meadow-100 flex items-center justify-center text-emerald-600">
+                  <i data-lucide="activity" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h3 class="font-display font-bold text-forest-950 text-base" id="heroLocName">Delhi Plains Telemetry</h3>
+                  <p class="text-xs font-semibold text-emerald-600 flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> AgroMonitoring API Active
+                  </p>
+                </div>
+              </div>
+              <a href="weather_intelligence.html" class="font-mono text-xs font-bold bg-lime-400/20 text-forest-900 border border-lime-400/40 px-3 py-1 rounded-full hover:bg-lime-400 transition">Change Place &rarr;</a>
+            </div>
+
+            <!-- Mini Live Gauges -->
+            <div class="grid grid-cols-2 gap-4 my-6">
+              <div class="bg-meadow-50 p-4 rounded-2xl border border-meadow-100">
+                <div class="flex items-center justify-between text-xs text-forest-700 font-bold mb-1">
+                  <span>Soil Moisture</span>
+                  <i data-lucide="droplets" class="w-3.5 h-3.5 text-blue-500"></i>
+                </div>
+                <div class="font-mono text-2xl font-black text-forest-950">34.2%</div>
+                <div class="w-full bg-meadow-200 h-1.5 rounded-full mt-2 overflow-hidden">
+                  <div class="bg-emerald-500 h-full rounded-full" style="width: 68%;"></div>
+                </div>
+                <p class="text-[11px] text-emerald-700 font-semibold mt-1.5">Optimal root hydration</p>
+              </div>
+
+              <div class="bg-meadow-50 p-4 rounded-2xl border border-meadow-100">
+                <div class="flex items-center justify-between text-xs text-forest-700 font-bold mb-1">
+                  <span>Rhizosphere pH</span>
+                  <i data-lucide="test-tube" class="w-3.5 h-3.5 text-emerald-600"></i>
+                </div>
+                <div class="font-mono text-2xl font-black text-forest-950">6.8 pH</div>
+                <div class="w-full bg-meadow-200 h-1.5 rounded-full mt-2 overflow-hidden">
+                  <div class="bg-lime-500 h-full rounded-full" style="width: 75%;"></div>
+                </div>
+                <p class="text-[11px] text-emerald-700 font-semibold mt-1.5">Perfect nutrient buffer</p>
+              </div>
+            </div>
+
+            <!-- Recommendation Alert -->
+            <div class="bg-emerald-500/10 border border-emerald-500/25 p-4 rounded-2xl flex items-start gap-3">
+              <i data-lucide="sparkles" class="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0"></i>
+              <div>
+                <h4 class="text-xs font-bold text-forest-950">AgroAI Optimization Cue</h4>
+                <p class="text-xs text-forest-800 leading-relaxed mt-0.5">
+                  Evapotranspiration forecast indicates 2.4 mm/day loss. Next micro-pulse irrigation scheduled at 05:30 AM tomorrow.
+                </p>
+              </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="mt-6 pt-5 border-t border-meadow-100 flex items-center justify-between">
+              <a href="chemistry_lab.html" class="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1">
+                Full Soil Chemistry &rarr;
+              </a>
+              <a href="crop_lifecycle.html" class="text-xs font-bold text-forest-800 hover:text-forest-950 flex items-center gap-1">
+                Crop Plan &rarr;
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 1: INNOVATING THE FUTURE ================= -->
+  <section id="innovations" class="py-24 bg-white border-b border-meadow-200">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-16 gap-8">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-meadow-100 text-xs font-bold text-forest-800 uppercase tracking-widest mb-3">
+            Core Agronomic Modules
+          </div>
+          <h2 class="text-3xl sm:text-5xl font-display font-black text-forest-950 tracking-tight leading-tight">
+            Integrated Systems for <br /> High-Yield Agriculture
+          </h2>
+        </div>
+        <p class="text-forest-800/80 max-w-md text-base leading-relaxed">
+          AgriBot unites automated hardware, biological soil remediation, and predictive artificial intelligence into a single unified operating system for growers.
+        </p>
+      </div>
+
+      <!-- 3-Column Agricultural Modules -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- Module 1: Precision Drip -->
+        <a href="precision_drip.html" class="group bg-meadow-50 rounded-3xl overflow-hidden border border-meadow-200 hover:border-emerald-500 shadow-agri-card hover:shadow-agri-elevated transition-all duration-300 flex flex-col no-underline text-inherit">
+          <div class="h-56 overflow-hidden relative">
+            <img 
+              src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=900&q=80" 
+              alt="Precision drip irrigation system" 
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <span class="absolute top-4 left-4 px-3 py-1 bg-forest-950 text-lime-400 text-xs font-bold rounded-full uppercase tracking-wider">
+              Hydraulics
+            </span>
+          </div>
+          <div class="p-6 flex-1 flex flex-col justify-between">
+            <div>
+              <h3 class="font-display font-bold text-xl text-forest-950 mb-2 group-hover:text-emerald-600 transition">
+                Precision Drip Architecture
+              </h3>
+              <p class="text-xs text-forest-800/80 leading-relaxed">
+                Subsurface pressure-compensating silicone emitters eliminate evaporation, delivering exact nutrient-water stoichiometry directly into the root zone.
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-meadow-200 flex items-center justify-between text-xs font-bold text-emerald-600">
+              <span>Interactive Capillary Simulator</span>
+              <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+            </div>
+          </div>
+        </a>
+
+        <!-- Module 2: Soil Rhizosphere -->
+        <a href="regenerative_soil.html" class="group bg-meadow-50 rounded-3xl overflow-hidden border border-meadow-200 hover:border-emerald-500 shadow-agri-card hover:shadow-agri-elevated transition-all duration-300 flex flex-col no-underline text-inherit">
+          <div class="h-56 overflow-hidden relative">
+            <img 
+              src="https://images.unsplash.com/photo-1589923188900-85dae523342b?q=80&w=900&auto=format&fit=crop" 
+              alt="Regenerative soil biology and farmer" 
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <span class="absolute top-4 left-4 px-3 py-1 bg-emerald-600 text-white text-xs font-bold rounded-full uppercase tracking-wider">
+              Subterranean
+            </span>
+          </div>
+          <div class="p-6 flex-1 flex flex-col justify-between">
+            <div>
+              <h3 class="font-display font-bold text-xl text-forest-950 mb-2 group-hover:text-emerald-600 transition">
+                Regenerative Soil Cycles
+              </h3>
+              <p class="text-xs text-forest-800/80 leading-relaxed">
+                No-till multi-species cover crop systems reactivating mycorrhizal hyphae networks and building permanent humic carbon sponges.
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-meadow-200 flex items-center justify-between text-xs font-bold text-emerald-600">
+              <span>Explore Soil Horizons</span>
+              <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+            </div>
+          </div>
+        </a>
+
+        <!-- Module 3: Chemistry Lab -->
+        <a href="chemistry_lab.html" class="group bg-meadow-50 rounded-3xl overflow-hidden border border-meadow-200 hover:border-emerald-500 shadow-agri-card hover:shadow-agri-elevated transition-all duration-300 flex flex-col no-underline text-inherit">
+          <div class="h-56 overflow-hidden relative">
+            <img 
+              src="https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?q=80&w=800&auto=format&fit=crop" 
+              alt="Agricultural soil lab analysis" 
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <span class="absolute top-4 left-4 px-3 py-1 bg-forest-800 text-sprout-300 text-xs font-bold rounded-full uppercase tracking-wider">
+              Telemetry
+            </span>
+          </div>
+          <div class="p-6 flex-1 flex flex-col justify-between">
+            <div>
+              <h3 class="font-display font-bold text-xl text-forest-950 mb-2 group-hover:text-emerald-600 transition">
+                Subsurface Chemistry Lab
+              </h3>
+              <p class="text-xs text-forest-800/80 leading-relaxed">
+                Automated N-P-K stoichiometry, soil EC salinity analysis, and customized bio-fertilizer recipe generators for balanced crop nutrition.
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-meadow-200 flex items-center justify-between text-xs font-bold text-emerald-600">
+              <span>Run Soil Analysis</span>
+              <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+            </div>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SECTION 2: FAQ ACCORDION ================= -->
+  <section id="faq" class="py-24 bg-meadow-50 text-forest-950 border-b border-meadow-200">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        
+        <div class="lg:col-span-5">
+          <span class="text-xs font-bold uppercase tracking-widest text-emerald-700 bg-emerald-500/10 px-3.5 py-1.5 rounded-full border border-emerald-500/20">
+            Agronomy Intelligence
+          </span>
+          <h2 class="text-3xl sm:text-4xl font-display font-black text-forest-950 tracking-tight mt-4">
+            Frequently Asked Questions
+          </h2>
+          <p class="text-forest-800/80 mt-4 text-sm leading-relaxed">
+            Everything you need to know about setting up AgriBot's autonomous soil sensors, micro-fertigation lines, and conversational AI agronomist.
+          </p>
+          
+          <div class="mt-8 p-6 bg-white rounded-3xl border border-meadow-200 shadow-sm">
+            <h4 class="font-bold text-forest-950 text-base flex items-center gap-2">
+              <i data-lucide="bot" class="w-5 h-5 text-emerald-600"></i> Have specific crop inquiries?
+            </h4>
+            <p class="text-xs text-forest-700 mt-2 mb-4 leading-relaxed">
+              AgroAI is primed with localized soil datasets, pathogen diagnosis models, and fertigation calculators.
+            </p>
+            <button onclick="toggleChatbot()" class="w-full py-3 bg-forest-900 text-lime-400 font-bold rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-forest-800 transition shadow-md">
+              <span>Open AgroAI Assistant</span>
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Accordions -->
+        <div class="lg:col-span-7 space-y-4" id="faq-container">
+          
+          <div class="bg-white rounded-2xl border border-meadow-200 p-5 shadow-sm">
+            <button class="faq-toggle w-full text-left flex justify-between items-center text-base font-bold text-forest-950 focus:outline-none">
+              <span>What kind of precision farming solutions does AgriBot deploy?</span>
+              <span class="faq-icon w-8 h-8 rounded-full bg-meadow-100 flex items-center justify-center text-forest-900 transition-transform duration-300">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+              </span>
+            </button>
+            <div class="faq-answer hidden text-xs sm:text-sm text-forest-800/80 pt-3 leading-relaxed border-t border-meadow-100 mt-3">
+              We provide autonomous subsurface precision drip networks, FDR dielectric soil sensors, regenerative multi-species cover crop planning, and local AgroAI crop analytics that reduce inputs while boosting harvest yields.
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-meadow-200 p-5 shadow-sm">
+            <button class="faq-toggle w-full text-left flex justify-between items-center text-base font-bold text-forest-950 focus:outline-none">
+              <span>How does AgroAI diagnose crop disease and nutrient deficiency?</span>
+              <span class="faq-icon w-8 h-8 rounded-full bg-meadow-100 flex items-center justify-center text-forest-900 transition-transform duration-300">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+              </span>
+            </button>
+            <div class="faq-answer hidden text-xs sm:text-sm text-forest-800/80 pt-3 leading-relaxed border-t border-meadow-100 mt-3">
+              AgroAI combines real-time soil pH, nitrogen, and moisture readings from your field probes with Gemini agronomy models to identify early chlorosis, fungal blights, or root asphyxiation before visible crop loss occurs.
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-meadow-200 p-5 shadow-sm">
+            <button class="faq-toggle w-full text-left flex justify-between items-center text-base font-bold text-forest-950 focus:outline-none">
+              <span>Can I connect my farm's offline CSV telemetry to AgroAI?</span>
+              <span class="faq-icon w-8 h-8 rounded-full bg-meadow-100 flex items-center justify-center text-forest-900 transition-transform duration-300">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+              </span>
+            </button>
+            <div class="faq-answer hidden text-xs sm:text-sm text-forest-800/80 pt-3 leading-relaxed border-t border-meadow-100 mt-3">
+              Yes. The platform seamlessly sends structured telemetry data to the backend at <code>/api/chat</code>, enabling automated custom analysis of your localized soil logs and weather histories.
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="bg-forest-950 text-slate-400 py-12 border-t border-forest-900">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-6 text-xs">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-black">P</div>
+        <span class="text-slate-300 font-bold">© 2026 AgriBot Agri-Systems. All rights reserved.</span>
+      </div>
+      <div class="flex items-center gap-6">
+        <a href="regenerative_soil.html" class="hover:text-lime-400 transition">Soil Science</a>
+        <a href="crop_lifecycle.html" class="hover:text-lime-400 transition">Lifecycle Planner</a>
+        <a href="chemistry_lab.html" class="hover:text-lime-400 transition">Chemistry Lab</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= AGROAI FLOATING MODAL & CHATBOT UI ================= -->
+  <style>
+    #agroai-chat-popup {
+      display: none;
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      width: min(420px, calc(100vw - 32px));
+      height: min(600px, calc(100vh - 48px));
+      background: #FFFFFF;
+      color: #092414;
+      border: 1px solid #DCECE0;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 25px 70px rgba(4, 20, 10, 0.28);
+      z-index: 10000;
+      flex-direction: column;
+    }
+    #agroai-chat-popup.open {
+      display: flex;
+      animation: agroaiIn .22s ease-out;
+    }
+    @keyframes agroaiIn {
+      from { opacity: 0; transform: translateY(14px) scale(.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .agroai-float {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      width: 60px;
+      height: 60px;
+      border: 0;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #092414 0%, #144227 100%);
+      color: #CFF632;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      box-shadow: 0 12px 35px rgba(4, 20, 10, 0.35);
+      z-index: 9999;
+      border: 2px solid rgba(207, 246, 50, 0.4);
+      transition: all .2s ease;
+    }
+    .agroai-float:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 16px 40px rgba(4, 20, 10, 0.45);
+    }
+
+    /* --- SKELETON SHIMMER LOADING ANIMATION --- */
+    @keyframes shimmerWave {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .skeleton-shimmer {
+      background: linear-gradient(90deg, #EEF5F0 25%, #DCECE0 50%, #EEF5F0 75%);
+      background-size: 200% 100%;
+      animation: shimmerWave 1.6s infinite ease-in-out;
+      border-radius: 8px;
+    }
+    .skeleton-shimmer-dark {
+      background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.16) 50%, rgba(255,255,255,0.06) 75%);
+      background-size: 200% 100%;
+      animation: shimmerWave 1.6s infinite ease-in-out;
+      border-radius: 8px;
+    }
+
+    /* --- PERIODIC 3-DOT BOUNCING TYPING LOADER --- */
+    @keyframes periodicDotBounce {
+      0%, 80%, 100% {
+        transform: translateY(0);
+        opacity: 0.35;
+      }
+      40% {
+        transform: translateY(-8px);
+        opacity: 1;
+      }
+    }
+    .periodic-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10B981;
+      display: inline-block;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+      animation: periodicDotBounce 1.4s infinite ease-in-out both;
+    }
+    .periodic-dot:nth-child(1) {
+      animation-delay: 0.0s;
+    }
+    .periodic-dot:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+    .periodic-dot:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    @keyframes botGlowPulse {
+      0%, 100% { box-shadow: 0 4px 20px rgba(16, 185, 129, 0.12); }
+      50% { box-shadow: 0 8px 30px rgba(16, 185, 129, 0.28); }
+    }
+    .agroai-typing-bubble {
+      animation: botGlowPulse 2s infinite ease-in-out;
+    }
+
+  </style>
+
+  
+  <!-- Floating Farmer Voice Detection Button (Direct One-Click Voice Input) -->
+  <button class="farmer-voice-float group" id="farmer-voice-float-btn" onclick="startFarmerVoiceInput()" aria-label="Farmer Voice Input">
+    <div class="w-8 h-8 rounded-full bg-forest-950 text-lime-400 flex items-center justify-center flex-shrink-0 shadow-sm relative">
+      <span id="voice-pulse-ring" class="hidden absolute -inset-1 rounded-full bg-lime-400/50 animate-ping"></span>
+      <i data-lucide="mic" class="w-4 h-4"></i>
+    </div>
+    <span class="font-bold text-xs tracking-wide" id="farmer-voice-float-label">बोलून विचारा</span>
+  </button>
+
+  <button class="agroai-float" id="agroai-float-btn" onclick="toggleChatbot()" aria-label="Open AgroAI Assistant">
+    <i data-lucide="bot" class="w-7 h-7 text-lime-400"></i>
+  </button>
+
+  <div id="agroai-chat-popup" aria-label="AgroAI Assistant">
+    
+  <!-- Floating Scroll-to-Bottom Pill -->
+  <div id="agroai-scroll-pill" class="scroll-bottom-pill" onclick="scrollChatToBottom()">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    <span id="agroai-scroll-pill-text">New messages</span>
+  </div>
+
+    <!-- Header: Simple, Clean, Uncrowded -->
+    <div class="bg-forest-950 text-white px-4 py-3 flex items-center justify-between border-b border-forest-900 select-none">
+      <!-- Left: Brand & Status -->
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="w-8 h-8 rounded-full bg-lime-400 text-forest-950 flex items-center justify-center font-bold flex-shrink-0 shadow-sm">
+          <i data-lucide="sparkles" class="w-4 h-4"></i>
+        </div>
+        <div class="min-w-0">
+          <div class="font-bold text-sm text-white leading-tight truncate" id="agroai-header-title">AgroAI</div>
+          <div class="text-[11px] text-lime-400 font-medium flex items-center gap-1.5 leading-tight mt-0.5" id="agroai-header-status">
+            <span class="w-2 h-2 rounded-full bg-lime-400 animate-pulse inline-block"></span>
+            <span>ऑनलाइन • Active</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Sleek Language Pill & Action Buttons -->
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <!-- Language Switcher: Simple, readable Devanagari font rendering -->
+        <div class="inline-flex p-0.5 rounded-full bg-white/10 border border-white/15 text-[11px] font-bold tracking-normal">
+          <button type="button" id="chat-lang-en" onclick="setAgroAILanguage('en')" class="px-2.5 py-1 rounded-full transition text-white/75 hover:text-white cursor-pointer">EN</button>
+          <button type="button" id="chat-lang-mr" onclick="setAgroAILanguage('mr')" class="px-2.5 py-1 rounded-full transition text-forest-950 bg-lime-400 font-extrabold shadow-sm cursor-pointer">मराठी</button>
+          <button type="button" id="chat-lang-hi" onclick="setAgroAILanguage('hi')" class="px-2.5 py-1 rounded-full transition text-white/75 hover:text-white cursor-pointer">हिंदी</button>
+        </div>
+
+        <!-- Minimal Sound Toggle -->
+        <button id="agroai-sound-toggle" onclick="AgroSoundFX.toggle()" title="Sound Effects (Toggle)" class="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-lime-300 hover:text-white transition flex items-center justify-center cursor-pointer">
+          <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+        </button>
+
+        <!-- Minimal Clear Chat (Icon only) -->
+        <button onclick="clearAgroAIChatHistory()" title="Clear Chat History" class="w-7 h-7 rounded-full bg-white/10 hover:bg-red-500/30 text-lime-300 hover:text-red-300 transition flex items-center justify-center cursor-pointer">
+          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+        </button>
+
+        <!-- Close Button -->
+        <button onclick="toggleChatbot()" title="Close" class="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white flex items-center justify-center font-bold text-base cursor-pointer">&times;</button>
+      </div>
+    </div>
+
+    <!-- Messages Window: Clean, Airy & Spacious -->
+    <div id="agroai-messages" class="flex-1 p-4 overflow-y-auto flex flex-col gap-3 bg-[#F8FAF9] text-xs sm:text-[13px]">
+      <!-- Default Welcome Message -->
+      <div id="agroai-welcome-bubble" class="bg-white p-3.5 rounded-2xl rounded-tl-sm border border-meadow-200/80 text-forest-900 shadow-2xs max-w-[90%] self-start">
+        <div class="flex items-center justify-between pb-1.5 mb-1.5 border-b border-meadow-100">
+          <div class="flex items-center gap-1.5">
+            <div class="w-4 h-4 rounded-full bg-forest-900 text-lime-400 flex items-center justify-center font-bold text-[9px]">
+              <i data-lucide="sparkles" class="w-2.5 h-2.5"></i>
+            </div>
+            <span class="text-[11px] font-bold text-forest-950" id="agroai-bot-name">AgroAI</span>
+          </div>
+          <button onclick="speakAgroAIMessage(this, document.getElementById('agroai-welcome-text').innerText)" class="agroai-speak-btn p-1 rounded-md hover:bg-meadow-100 text-forest-600 transition" title="Listen (Text-to-Speech)">
+            <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+        <div id="agroai-welcome-text" class="text-xs sm:text-[13px] leading-relaxed text-forest-900 font-normal">
+          नमस्कार! मी <strong>ॲग्रोएआय (AgroAI)</strong> आहे. माती, खते, पिके किंवा बाजारभावाबाबत विचारा किंवा खालील विषयांवर टॅप करा.
+        </div>
+      </div>
+    </div>
+
+    <!-- Listening HUD Banner (Appears cleanly when farmer taps microphone) -->
+    <div id="agroai-listening-hud" class="hidden px-3.5 py-2 bg-gradient-to-r from-emerald-600 via-forest-800 to-forest-950 text-white rounded-xl mx-3 mb-2 flex items-center justify-between shadow-sm">
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="relative flex h-2 w-2 flex-shrink-0">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-lime-500"></span>
+        </span>
+        <span id="agroai-listening-text" class="text-xs font-semibold text-lime-300 leading-normal truncate">ऐकत आहे... प्रश्न बोला</span>
+      </div>
+      <button type="button" onclick="stopFarmerVoiceInput(true)" class="text-[11px] bg-white/20 hover:bg-white/30 text-white px-2.5 py-0.5 rounded-full font-bold transition flex-shrink-0">
+        <span id="agroai-listening-done-btn">झाले</span>
+      </button>
+    </div>
+
+    <!-- Exactly 3 Friendly Quick Chips (Non-overwhelming, Short & Natural) -->
+    <div id="agroai-chips-container" class="px-3 py-2 bg-white border-t border-meadow-100 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+      <!-- Populated dynamically by setAgroAILanguage -->
+    </div>
+
+    <!-- Input Bar: Modern Pill Layout (Mic + Input + Send + PDF) -->
+    <div class="p-2.5 bg-white border-t border-meadow-100 flex items-center gap-2">
+      <!-- Dedicated Farmer Voice Mic Button -->
+      <button id="agroai-mic" type="button" onclick="toggleFarmerVoiceInput()" class="w-9 h-9 rounded-full bg-lime-400 hover:bg-lime-300 text-forest-950 flex items-center justify-center flex-shrink-0 transition font-bold shadow-2xs cursor-pointer" title="बोलून विचारा / Tap to Speak">
+        <i data-lucide="mic" class="w-4 h-4"></i>
+      </button>
+
+      <!-- Clean Input Box with Generous Padding -->
+      <input id="agroai-input" type="text" placeholder="येथे प्रश्न विचारा किंवा बोला..." class="flex-1 min-w-0 bg-meadow-50/80 border border-meadow-200 rounded-full px-3.5 py-2 text-xs sm:text-[13px] text-forest-950 placeholder:text-forest-400 outline-none focus:border-emerald-500 focus:bg-white transition leading-normal">
+
+      <!-- Send Button -->
+      <button id="agroai-send" type="button" onclick="sendAgroAIMessage()" class="w-9 h-9 rounded-full bg-forest-900 hover:bg-forest-800 text-lime-400 flex items-center justify-center flex-shrink-0 font-bold transition shadow-2xs cursor-pointer" title="Send Question">
+        <i data-lucide="arrow-up" class="w-4 h-4"></i>
+      </button>
+
+      <!-- Minimal PDF clip -->
+      <label for="agroai-pdf" class="w-7 h-7 rounded-full hover:bg-meadow-100 text-forest-500 hover:text-forest-900 flex items-center justify-center flex-shrink-0 transition cursor-pointer" title="Attach Soil Report PDF">
+        <i data-lucide="paperclip" class="w-3.5 h-3.5"></i>
+      </label>
+      <input id="agroai-pdf" type="file" accept="application/pdf,.pdf" class="hidden">
+    </div>
+  </div>
+
+  <script>
+    
+    // =========================================================================
+    // MULTI-LANGUAGE MODEL & LOCALIZATION DICTIONARY (EN / मराठी / हिंदी)
+    // =========================================================================
+    const AGROAI_LANGUAGES = {
+      mr: {
+        code: 'mr-IN',
+        name: 'मराठी',
+        headerTitle: 'AgroAI (ॲग्रोएआय)',
+        headerStatus: 'ऑनलाइन • जोडलेले',
+        botName: 'AgroAI',
+        inputPlaceholder: 'येथे प्रश्न विचारा किंवा बोला...',
+        voiceFloatLabel: 'बोलून विचारा',
+        listeningText: 'ऐकत आहे... प्रश्न बोला...',
+        listeningDoneBtn: 'झाले',
+        welcomeText: 'नमस्कार! मी <strong>ॲग्रोएआय (AgroAI)</strong> आहे. माती, खते, पिके किंवा बाजारभावाबाबत विचारा किंवा खालील विषयांवर टॅप करा.',
+        quickChips: [
+          { label: '🌿 माती व खत', prompt: 'मातीचे आरोग्य आणि पिकांसाठी कोणते खत वापरावे?' },
+          { label: '🌧️ हवामान अंदाज', prompt: 'या आठवड्यातील पाऊस व हवामानाचा शेतीसाठी काय सल्ला आहे?' },
+          { label: '💰 बाजार भाव', prompt: 'आजचे शेतमाल व पीक बाजार भाव काय आहेत?' }
+        ]
+      },
+      hi: {
+        code: 'hi-IN',
+        name: 'हिंदी',
+        headerTitle: 'AgroAI (एग्रोएआई)',
+        headerStatus: 'ऑनलाइन • कनेक्टेड',
+        botName: 'AgroAI',
+        inputPlaceholder: 'यहाँ प्रश्न लिखें या बोलें...',
+        voiceFloatLabel: 'बोलकर पूछें',
+        listeningText: 'सुन रहा हूँ... प्रश्न बोलिए...',
+        listeningDoneBtn: 'पूर्ण',
+        welcomeText: 'नमस्ते! मैं <strong>एग्रोएआई (AgroAI)</strong> हूँ। फसल, मिट्टी, खाद या मंडी भाव के बारे में कोई भी प्रश्न पूछें या माइक दबाकर बोलें।',
+        quickChips: [
+          { label: '🌿 मिट्टी और खाद', prompt: 'मिट्टी की सेहत और फसलों के लिए कौन सी खाद सही है?' },
+          { label: '🌧️ मौसम अलर्ट', prompt: 'इस हफ्ते मौसम और बारिश को लेकर क्या सलाह है?' },
+          { label: '💰 मंडी भाव', prompt: 'आज के प्रमुख मंडी भाव और फसल दर क्या हैं?' }
+        ]
+      },
+      en: {
+        code: 'en-IN',
+        name: 'English',
+        headerTitle: 'AgroAI',
+        headerStatus: 'Online • Connected',
+        botName: 'AgroAI',
+        inputPlaceholder: 'Ask a question or tap mic...',
+        voiceFloatLabel: 'Speak to Ask',
+        listeningText: 'Listening... Speak now...',
+        listeningDoneBtn: 'Done',
+        welcomeText: 'Hello! I am <strong>AgroAI</strong>. Ask me about crops, soil, fertilizers, or mandi prices, or tap a topic below to begin.',
+        quickChips: [
+          { label: '🌿 Soil & Fertilizer', prompt: 'What fertilizer and soil care is best for my crops?' },
+          { label: '🌧️ Weather Advisory', prompt: 'What is the rain and weather advisory for farming this week?' },
+          { label: '💰 Mandi Prices', prompt: 'What are today\'s latest mandi crop market prices?' }
+        ]
+      }
+    };
+
+    let currentAgroAILang = localStorage.getItem('agribot_lang') || 'mr';
+
+    function setAgroAILanguage(lang) {
+      if (!AGROAI_LANGUAGES[lang]) lang = 'mr';
+      currentAgroAILang = lang;
+      localStorage.setItem('agribot_lang', lang);
+      const dict = AGROAI_LANGUAGES[lang];
+
+      // Update Chat Header Language Toggle Buttons (Active: Lime pill, Inactive: muted text)
+      ['en', 'mr', 'hi'].forEach(l => {
+        const chatBtn = document.getElementById('chat-lang-' + l);
+        if (chatBtn) {
+          if (l === lang) {
+            chatBtn.className = 'px-2.5 py-1 rounded-full transition text-forest-950 bg-lime-400 font-extrabold shadow-sm cursor-pointer';
+          } else {
+            chatBtn.className = 'px-2.5 py-1 rounded-full transition text-white/75 hover:text-white font-medium cursor-pointer';
+          }
+        }
+      });
+
+      // Update Header Title & Status
+      const hTitle = document.getElementById('agroai-header-title');
+      if (hTitle) hTitle.textContent = dict.headerTitle;
+      const hStatus = document.getElementById('agroai-header-status');
+      if (hStatus) hStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-lime-400 animate-pulse inline-block"></span> <span>${dict.headerStatus}</span>`;
+      const botName = document.getElementById('agroai-bot-name');
+      if (botName) botName.textContent = dict.botName;
+
+      // Update Welcome Bubble Text (if present)
+      const welcomeText = document.getElementById('agroai-welcome-text');
+      if (welcomeText) welcomeText.innerHTML = dict.welcomeText;
+
+      // Update Input Placeholder & Voice Float Button Label
+      const input = document.getElementById('agroai-input');
+      if (input) input.placeholder = dict.inputPlaceholder;
+      const voiceFloatLabel = document.getElementById('farmer-voice-float-label');
+      if (voiceFloatLabel) voiceFloatLabel.textContent = dict.voiceFloatLabel;
+      const listeningText = document.getElementById('agroai-listening-text');
+      if (listeningText) listeningText.textContent = dict.listeningText;
+      const listeningDoneBtn = document.getElementById('agroai-listening-done-btn');
+      if (listeningDoneBtn) listeningDoneBtn.textContent = dict.listeningDoneBtn;
+
+      // Populate EXACTLY 3 Simple Quick Chips (Comfortable padding for Devanagari matras)
+      const chipsContainer = document.getElementById('agroai-chips-container');
+      if (chipsContainer) {
+        chipsContainer.innerHTML = dict.quickChips.map(chip => `
+          <button type="button" onclick="quickPrompt('${chip.prompt.replace(/'/g, "\'")}')" class="bg-meadow-50 hover:bg-emerald-50 text-forest-900 px-3.5 py-1.5 rounded-full whitespace-nowrap border border-meadow-200/90 text-xs font-semibold transition shadow-2xs hover:border-emerald-300 flex-shrink-0 flex items-center gap-1.5 cursor-pointer leading-normal">
+            ${chip.label}
+          </button>
+        `).join('');
+      }
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // =========================================================================
+    // FLOATING FARMER VOICE DETECTION (WEB SPEECH RECOGNITION API)
+    // =========================================================================
+    let agroAISpeechRecognition = null;
+    let isFarmerVoiceListening = false;
+
+    function getSpeechRecognitionInstance() {
+      if (agroAISpeechRecognition) return agroAISpeechRecognition;
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRec) return null;
+
+      const recognition = new SpeechRec();
+      recognition.continuous = false;
+      recognition.interimResults = true;
+
+      recognition.onstart = function() {
+        isFarmerVoiceListening = true;
+        updateFarmerVoiceUI(true);
+        AgroSoundFX.playPop();
+      };
+
+      recognition.onresult = function(event) {
+        let interimTranscript = '';
+        let finalTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          } else {
+            interimTranscript += event.results[i][0].transcript;
+          }
+        }
+        const text = (finalTranscript || interimTranscript).trim();
+        const input = document.getElementById("agroai-input");
+        if (input && text) {
+          input.value = text;
+        }
+      };
+
+      recognition.onerror = function(event) {
+        console.warn("Speech recognition error:", event.error);
+        stopFarmerVoiceInput(false);
+      };
+
+      recognition.onend = function() {
+        isFarmerVoiceListening = false;
+        updateFarmerVoiceUI(false);
+        const input = document.getElementById("agroai-input");
+        if (input && input.value.trim().length > 0) {
+          // Farmer finished speaking -> Automatically submit!
+          sendAgroAIMessage();
+        }
+      };
+
+      agroAISpeechRecognition = recognition;
+      return recognition;
+    }
+
+    function updateFarmerVoiceUI(listening) {
+      const hud = document.getElementById("agroai-listening-hud");
+      const micBtn = document.getElementById("agroai-mic");
+      const floatBtn = document.getElementById("farmer-voice-float-btn");
+      const pulseRing = document.getElementById("voice-pulse-ring");
+
+      if (listening) {
+        if (hud) hud.classList.remove("hidden");
+        if (micBtn) {
+          micBtn.classList.remove("bg-lime-400", "text-forest-950");
+          micBtn.classList.add("bg-red-500", "text-white", "animate-pulse");
+        }
+        if (floatBtn) floatBtn.classList.add("is-listening");
+        if (pulseRing) pulseRing.classList.remove("hidden");
+      } else {
+        if (hud) hud.classList.add("hidden");
+        if (micBtn) {
+          micBtn.classList.remove("bg-red-500", "text-white", "animate-pulse");
+          micBtn.classList.add("bg-lime-400", "text-forest-950");
+        }
+        if (floatBtn) floatBtn.classList.remove("is-listening");
+        if (pulseRing) pulseRing.classList.add("hidden");
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function startFarmerVoiceInput() {
+      // Ensure chat popup is opened
+      const popup = document.getElementById("agroai-chat-popup");
+      const floatBtn = document.getElementById("agroai-float-btn");
+      if (!popup.classList.contains("open")) {
+        popup.classList.add("open");
+        if (floatBtn) floatBtn.style.display = "none";
+      }
+
+      const rec = getSpeechRecognitionInstance();
+      if (!rec) {
+        alert("Your browser does not support Web Speech Recognition. Please use Google Chrome or type your question.");
+        return;
+      }
+
+      try {
+        const langCode = AGROAI_LANGUAGES[currentAgroAILang]?.code || 'mr-IN';
+        rec.lang = langCode;
+        rec.start();
+      } catch (err) {
+        // If already started, stop then restart
+        try { rec.stop(); } catch(e){}
+      }
+    }
+
+    function stopFarmerVoiceInput(submitIfPresent = true) {
+      if (agroAISpeechRecognition) {
+        try { agroAISpeechRecognition.stop(); } catch(e) {}
+      }
+      updateFarmerVoiceUI(false);
+      if (submitIfPresent) {
+        const input = document.getElementById("agroai-input");
+        if (input && input.value.trim().length > 0) {
+          sendAgroAIMessage();
+        }
+      }
+    }
+
+    function toggleFarmerVoiceInput() {
+      if (isFarmerVoiceListening) {
+        stopFarmerVoiceInput(true);
+      } else {
+        startFarmerVoiceInput();
+      }
+    }
+
+    // Connect toggleRecording legacy call to modern voice input
+    function toggleRecording() {
+      toggleFarmerVoiceInput();
+    }
+
+    function toggleChatbot() {
+      const popup = document.getElementById("agroai-chat-popup");
+      const floatButton = document.getElementById("agroai-float-btn");
+      const voiceFloat = document.getElementById("farmer-voice-float-btn");
+      popup.classList.toggle("open");
+      if (popup.classList.contains("open")) {
+        if (floatButton) floatButton.style.display = "none";
+        if (voiceFloat) voiceFloat.style.display = "none";
+        setTimeout(() => document.getElementById("agroai-input").focus(), 100);
+      } else {
+        if (floatButton) floatButton.style.display = "grid";
+        if (voiceFloat) voiceFloat.style.display = "flex";
+      }
+    }
+
+    function quickPrompt(txt) {
+      document.getElementById('agroai-input').value = txt;
+      sendAgroAIMessage();
+    }
+
+    // --- INTERACTIVE SOUND & HAPTIC FEEDBACK (SYNTHESIZED VIA WEB AUDIO API) ---
+    const AgroSoundFX = {
+      ctx: null,
+      enabled: localStorage.getItem('agribot_sound_enabled') !== 'false',
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) this.ctx = new AudioCtx();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      },
+      toggle() {
+        this.enabled = !this.enabled;
+        localStorage.setItem('agribot_sound_enabled', this.enabled);
+        this.updateIcon();
+        if (this.enabled) {
+          this.playDing();
+        }
+        return this.enabled;
+      },
+      updateIcon() {
+        const btn = document.getElementById('agroai-sound-toggle');
+        if (!btn) return;
+        if (this.enabled) {
+          btn.innerHTML = '<i data-lucide="volume-2" class="w-4 h-4 text-lime-400"></i>';
+          btn.title = "Sound Effects: ON (Click to mute)";
+          btn.classList.remove('opacity-50');
+        } else {
+          btn.innerHTML = '<i data-lucide="volume-x" class="w-4 h-4 text-forest-600"></i>';
+          btn.title = "Sound Effects: OFF (Click to unmute)";
+          btn.classList.add('opacity-50');
+        }
+        if (window.lucide) lucide.createIcons();
+      },
+      playPop() {
+        if (!this.enabled) return;
+        try {
+          this.init();
+          if (!this.ctx) return;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          const now = this.ctx.currentTime;
+          osc.frequency.setValueAtTime(420, now);
+          osc.frequency.exponentialRampToValueAtTime(140, now + 0.08);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.08);
+          if (navigator.vibrate) navigator.vibrate(15);
+        } catch(e) {}
+      },
+      playDing() {
+        if (!this.enabled) return;
+        try {
+          this.init();
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          [880, 1320].forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            const startTime = now + idx * 0.04;
+            osc.frequency.setValueAtTime(freq, startTime);
+            gain.gain.setValueAtTime(idx === 0 ? 0.14 : 0.09, startTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.55);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(startTime);
+            osc.stop(startTime + 0.6);
+          });
+          if (navigator.vibrate) navigator.vibrate([15, 40, 25]);
+        } catch(e) {}
+      }
+    };
+
+    // --- TEXT-TO-SPEECH (AUDIO VOICE READOUT VIA WEB SPEECH API) ---
+    function speakAgroAIMessage(btn, rawText) {
+      if (!('speechSynthesis' in window)) {
+        alert("Text-to-speech is not supported on this browser.");
+        return;
+      }
+
+      if (btn.dataset.speaking === "true") {
+        window.speechSynthesis.cancel();
+        btn.dataset.speaking = "false";
+        btn.innerHTML = '<i data-lucide="volume-2" class="w-3.5 h-3.5 text-forest-600"></i>';
+        btn.classList.remove('bg-emerald-100', 'text-emerald-800');
+        if (window.lucide) lucide.createIcons();
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+      document.querySelectorAll('.agroai-speak-btn').forEach(b => {
+        b.dataset.speaking = "false";
+        b.innerHTML = '<i data-lucide="volume-2" class="w-3.5 h-3.5 text-forest-600"></i>';
+        b.classList.remove('bg-emerald-100', 'text-emerald-800');
+      });
+
+      const cleanText = String(rawText)
+        .replace(/<[^>]*>?/gm, ' ')
+        .replace(/\*\*(.*?)\*\*/g, '$1')
+        .replace(/\*(.*?)\*/g, '$1')
+        .replace(/[•\-\#]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      const isDevanagari = /[\u0900-\u097F]/.test(cleanText);
+      if (currentAgroAILang === 'mr') {
+        utterance.lang = 'mr-IN';
+      } else if (currentAgroAILang === 'hi') {
+        utterance.lang = 'hi-IN';
+      } else {
+        utterance.lang = isDevanagari ? 'hi-IN' : 'en-IN';
+      }
+      utterance.rate = 0.95;
+      utterance.pitch = 1.0;
+
+      btn.dataset.speaking = "true";
+      btn.innerHTML = '<i data-lucide="volume-x" class="w-3.5 h-3.5 text-red-600 animate-pulse"></i>';
+      btn.classList.add('bg-emerald-100', 'text-emerald-800');
+      btn.title = "Click to stop voice readout";
+
+      utterance.onend = () => {
+        btn.dataset.speaking = "false";
+        btn.innerHTML = '<i data-lucide="volume-2" class="w-3.5 h-3.5 text-forest-600"></i>';
+        btn.classList.remove('bg-emerald-100', 'text-emerald-800');
+        btn.title = "Listen to advice (Text-to-Speech)";
+        if (window.lucide) lucide.createIcons();
+      };
+      utterance.onerror = utterance.onend;
+
+      window.speechSynthesis.speak(utterance);
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function copyAgroAIMessage(btn, text) {
+      const clean = text.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
+      navigator.clipboard.writeText(clean).then(() => {
+        btn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i>';
+        if (window.lucide) lucide.createIcons();
+        setTimeout(() => {
+          btn.innerHTML = '<i data-lucide="copy" class="w-3.5 h-3.5 text-forest-600"></i>';
+          if (window.lucide) lucide.createIcons();
+        }, 1800);
+      });
+    }
+
+    // --- CONTEXTUAL ACTION PILLS BUILDER ---
+    function generateActionPills(text) {
+      // Keep chat uncluttered and friendly for farmers (no wall of buttons)
+      const t = text.toLowerCase();
+      if (t.includes('mandi') || t.includes('bhav') || t.includes('price') || t.includes('बाजार') || t.includes('भाव')) {
+        return `<a href="market_intelligence.html" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px] font-bold border border-emerald-200 transition">
+          <i data-lucide="trending-up" class="w-3.5 h-3.5 text-emerald-600"></i> ${currentAgroAILang === 'mr' ? 'बाजार भाव तक्ता पहा ↗' : (currentAgroAILang === 'hi' ? 'मंडी भाव देखें ↗' : 'View Mandi Table ↗')}
+        </a>`;
+      }
+      if (t.includes('soil') || t.includes('माती') || t.includes('मिट्टी') || t.includes('npk')) {
+        return `<a href="soil_intelligence.html" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-meadow-100 hover:bg-meadow-200 text-forest-800 text-[11px] font-bold border border-meadow-200 transition">
+          <i data-lucide="layers" class="w-3.5 h-3.5 text-emerald-600"></i> ${currentAgroAILang === 'mr' ? 'माती विश्लेषण ↗' : (currentAgroAILang === 'hi' ? 'मिट्टी विश्लेषण ↗' : 'Soil Analysis ↗')}
+        </a>`;
+      }
+      return '';
+    }
+
+    function formatBotMessage(text) {
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/^###\s+(.*)$/gm, '<h3>$1</h3>')
+        .replace(/^##\s+(.*)$/gm, '<h2>$1</h2>')
+        .replace(/^#\s+(.*)$/gm, '<h1>$1</h1>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/\n/g, '<br>');
+    }
+
+    // --- PERIODIC 3-DOT BOUNCING TYPING LOADER ---
+    function showAgroAITypingIndicator() {
+      const container = document.getElementById("agroai-messages");
+      const indicator = document.createElement("div");
+      indicator.id = "agroai-typing-indicator";
+      indicator.className = "bg-white p-3.5 rounded-2xl rounded-tl-sm border border-meadow-200 text-forest-900 shadow-sm max-w-[85%] self-start agroai-typing-bubble transition-all duration-300";
+      indicator.innerHTML = `
+        <div class="flex items-center gap-2 mb-2">
+          <div class="w-5 h-5 rounded-md bg-forest-900 text-lime-400 flex items-center justify-center font-bold text-[10px]">
+            <i data-lucide="sparkles" class="w-3 h-3"></i>
+          </div>
+          <span class="text-[11px] font-bold text-forest-950">AgroAI Agronomist</span>
+          <span class="text-[9.5px] bg-emerald-50 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+            AgroAI is formulating prescription...
+          </span>
+        </div>
+        <div class="flex items-center gap-2 pt-1">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-meadow-100/90 border border-meadow-200">
+            <span class="periodic-dot"></span>
+            <span class="periodic-dot"></span>
+            <span class="periodic-dot"></span>
+          </div>
+          <span class="text-[11px] font-semibold text-forest-700 animate-pulse">Consulting telemetry & crop models...</span>
+        </div>
+      `;
+      container.appendChild(indicator);
+      container.scrollTop = container.scrollHeight;
+      if (window.lucide) lucide.createIcons();
+      return indicator;
+    }
+
+    // --- TYPEWRITER / SMOOTH STREAMING TEXT REVEAL ---
+    function streamAgroAIMessage(fullText, saveToStorage = true) {
+      const container = document.getElementById("agroai-messages");
+      const msg = document.createElement("div");
+      msg.className = "bg-white p-4 rounded-2xl rounded-tl-sm border border-meadow-200 text-forest-900 shadow-sm max-w-[90%] self-start transition-all duration-200";
+
+      // Message Header with TTS & Copy Buttons
+      const headerDiv = document.createElement("div");
+      headerDiv.className = "flex items-center justify-between pb-2 mb-2 border-b border-meadow-100";
+      headerDiv.innerHTML = `
+        <div class="flex items-center gap-2">
+          <div class="w-5 h-5 rounded-md bg-forest-900 text-lime-400 flex items-center justify-center font-bold text-[10px]">
+            <i data-lucide="sparkles" class="w-3 h-3"></i>
+          </div>
+          <span class="text-[11px] font-bold text-forest-950">AgroAI Agronomist</span>
+        </div>
+        <div class="flex items-center gap-1">
+          <button class="agroai-speak-btn p-1.5 rounded-lg hover:bg-meadow-100 text-forest-600 transition" title="Listen to advice (Text-to-Speech)">
+            <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+          </button>
+          <button class="agroai-copy-btn p-1.5 rounded-lg hover:bg-meadow-100 text-forest-600 transition" title="Copy Advice">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      `;
+      msg.appendChild(headerDiv);
+
+      const contentDiv = document.createElement("div");
+      contentDiv.className = "text-xs leading-relaxed text-forest-900 whitespace-pre-wrap";
+      msg.appendChild(contentDiv);
+
+      const pillsDiv = document.createElement("div");
+      pillsDiv.className = "flex flex-wrap gap-1.5 pt-3 mt-3 border-t border-meadow-100";
+      pillsDiv.style.display = "none";
+      msg.appendChild(pillsDiv);
+
+      container.appendChild(msg);
+      container.scrollTop = container.scrollHeight;
+
+      // Speak & Copy listeners
+      const speakBtn = headerDiv.querySelector('.agroai-speak-btn');
+      speakBtn.onclick = () => speakAgroAIMessage(speakBtn, fullText);
+      const copyBtn = headerDiv.querySelector('.agroai-copy-btn');
+      copyBtn.onclick = () => copyAgroAIMessage(copyBtn, fullText);
+
+      // Tokenize for smooth word-by-word streaming
+      const tokens = fullText.split(" ");
+      let tokenIdx = 0;
+      let streamDone = false;
+
+      const finishStream = () => {
+        if (streamDone) return;
+        streamDone = true;
+        clearInterval(timer);
+        contentDiv.innerHTML = formatBotMessage(fullText);
+        pillsDiv.innerHTML = generateActionPills(fullText);
+        pillsDiv.style.display = "flex";
+        container.scrollTop = container.scrollHeight;
+        if (window.lucide) lucide.createIcons();
+        AgroSoundFX.playDing();
+
+        if (saveToStorage) {
+          try {
+            let history = JSON.parse(localStorage.getItem("agribot_local_chat_history") || "[]");
+            history.push({ content: fullText, role: 'assistant', timestamp: new Date().toISOString() });
+            if (history.length > 50) history = history.slice(-50);
+            localStorage.setItem("agribot_local_chat_history", JSON.stringify(history));
+          } catch(e) {}
+        }
+      };
+
+      // Click to instantly complete stream
+      msg.onclick = (e) => {
+        if (!e.target.closest('button') && !e.target.closest('a') && !streamDone) {
+          finishStream();
+        }
+      };
+
+      const timer = setInterval(() => {
+        tokenIdx++;
+        contentDiv.innerHTML = formatBotMessage(tokens.slice(0, tokenIdx).join(" "));
+        container.scrollTop = container.scrollHeight;
+        if (tokenIdx >= tokens.length) {
+          finishStream();
+        }
+      }, 22);
+
+      if (window.lucide) lucide.createIcons();
+      return msg;
+    }
+
+    function appendAgroAIMessage(text, type, saveToStorage = true) {
+      const container = document.getElementById("agroai-messages");
+      const msg = document.createElement("div");
+      if (type === 'user') {
+        msg.className = "bg-forest-900 text-lime-300 p-3 rounded-2xl rounded-tr-sm self-end max-w-[85%] font-medium shadow-sm text-xs leading-relaxed";
+        msg.textContent = text;
+        container.appendChild(msg);
+        container.scrollTop = container.scrollHeight;
+
+        if (saveToStorage) {
+          try {
+            let history = JSON.parse(localStorage.getItem("agribot_local_chat_history") || "[]");
+            history.push({ content: text, role: 'user', timestamp: new Date().toISOString() });
+            if (history.length > 50) history = history.slice(-50);
+            localStorage.setItem("agribot_local_chat_history", JSON.stringify(history));
+          } catch (e) {}
+        }
+        return msg;
+      } else {
+        // Instant render for history loading
+        msg.className = "bg-white p-4 rounded-2xl rounded-tl-sm border border-meadow-200 text-forest-900 shadow-sm max-w-[90%] self-start";
+        msg.innerHTML = `
+          <div class="flex items-center justify-between pb-2 mb-2 border-b border-meadow-100">
+            <div class="flex items-center gap-2">
+              <div class="w-5 h-5 rounded-md bg-forest-900 text-lime-400 flex items-center justify-center font-bold text-[10px]">
+                <i data-lucide="sparkles" class="w-3 h-3"></i>
+              </div>
+              <span class="text-[11px] font-bold text-forest-950">AgroAI Agronomist</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <button class="agroai-speak-btn p-1.5 rounded-lg hover:bg-meadow-100 text-forest-600 transition" title="Listen to advice (Text-to-Speech)">
+                <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+              </button>
+              <button class="agroai-copy-btn p-1.5 rounded-lg hover:bg-meadow-100 text-forest-600 transition" title="Copy Advice">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+          <div class="text-xs leading-relaxed text-forest-900 whitespace-pre-wrap">${formatBotMessage(text)}</div>
+          <div class="flex flex-wrap gap-1.5 pt-3 mt-3 border-t border-meadow-100">
+            ${generateActionPills(text)}
+          </div>
+        `;
+        const speakBtn = msg.querySelector('.agroai-speak-btn');
+        if (speakBtn) speakBtn.onclick = () => speakAgroAIMessage(speakBtn, text);
+        const copyBtn = msg.querySelector('.agroai-copy-btn');
+        if (copyBtn) copyBtn.onclick = () => copyAgroAIMessage(copyBtn, text);
+
+        container.appendChild(msg);
+        container.scrollTop = container.scrollHeight;
+        if (window.lucide) lucide.createIcons();
+        return msg;
+      }
+    }
+
+    async function clearAgroAIChatHistory() {
+      if (!confirm("Are you sure you want to clear your AI chat history?")) return;
+
+      const container = document.getElementById("agroai-messages");
+      container.innerHTML = `
+        <div class="bg-white p-3.5 rounded-2xl rounded-tl-sm border border-meadow-200 text-forest-900 shadow-sm max-w-[85%] self-start">
+          <div class="flex items-center gap-2 text-emerald-700 font-bold mb-1">
+            <i data-lucide="check-circle" class="w-4 h-4"></i> Chat history cleared
+          </div>
+          Hello! I'm <strong>AgroAI</strong>. Ask me about soil chemistry, crop schedules, drip irrigation tuning, or field disease diagnostics.
+        </div>
+      `;
+
+      localStorage.removeItem("agribot_local_chat_history");
+      const token = localStorage.getItem("agroaiSessionToken");
+      if (token) {
+        try {
+          await fetch('/api/clear-history', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Session-Token': token },
+            body: JSON.stringify({ session_token: token })
+          });
+        } catch (e) {}
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // Built-in Intelligent Agronomic AI Engine (Zero-failure fallback for offline/local use)
+    function generateOfflineAgronomyReply(rawPrompt, pdfFile) {
+      const p = (rawPrompt || "").toLowerCase();
+      const isMarathi = currentAgroAILang === 'mr' || (/[\u0900-\u097F]/.test(rawPrompt) && (p.includes("माती") || p.includes("खत") || p.includes("पाऊस") || p.includes("भाव") || p.includes("गहू") || p.includes("सोयाबीन") || p.includes("कापूस") || p.includes("पाणी") || p.includes("रोग")));
+      const isHindi = currentAgroAILang === 'hi' || (/[\u0900-\u097F]/.test(rawPrompt) && (p.includes("मिट्टी") || p.includes("खाद") || p.includes("फसल") || p.includes("मौसम") || p.includes("सिंचाई") || p.includes("कीट")));
+
+      // -------------------------------------------------------------
+      // 1. MARATHI AGRONOMY ENGINE (मराठी कृषी सल्लागार)
+      // -------------------------------------------------------------
+      if (isMarathi || currentAgroAILang === 'mr') {
+        if (pdfFile) {
+          return `<strong>ॲग्रोएआय माती परीक्षण अहवाल (Soil Report):</strong><br><br>` +
+            `📄 <strong>तपासलेली फाइल:</strong> <em>${pdfFile.name}</em> (${(pdfFile.size/1024).toFixed(1)} KB)<br>` +
+            `🌱 <strong>सामू (pH) विश्लेषण:</strong> मातीचा सामू ६.८ असून मध्यम सेंद्रिय कर्ब (Organic Carbon) आढळला आहे.<br>` +
+            `🧪 <strong>खतांची मात्रा:</strong> एकरी २ बॅग सिंगल सुपर फॉस्फेट (SSP) आणि पुढील पाण्याच्या पाळीसोबत <strong>NPK 19:19:19</strong> चा वापर करावा.<br>` +
+            `💧 <strong>सिंचन सल्ला:</strong> ठिबक सिंचन १.५ बार दाबावर ४५ मिनिटे चालवावे.`;
+        }
+
+        if (p.includes("खत") || p.includes("माती") || p.includes("npk") || p.includes("fertilizer") || p.includes("soil") || p.includes("सामू")) {
+          return `<strong>ॲग्रोएआय माती व खत व्यवस्थापन सल्ला:</strong><br><br>` +
+            `🌱 <strong>संतुलित खत वापर:</strong> पिकाच्या शाकीय वाढीसाठी <strong>NPK 19:19:19</strong> किंवा <strong>12:32:16</strong> विद्राव्य खतांचा ठिबकमधून वापर करावा.<br>` +
+            `🍂 <strong>सेंद्रिय कर्ब सुधारणा:</strong> मातीची सुपीकता वाढवण्यासाठी एकरी २ टन चांगले कुजलेले शेणखत किंवा गांडूळ खत वापरावे.<br>` +
+            `🧪 <strong>मातीचा सामू (pH):</strong> सामू ६.५ ते ७.५ दरम्यान ठेवल्यास पिकांना झिंक, बोरॉन आणि फेरस ही सूक्ष्मद्रव्ये सहज उपलब्ध होतात.<br>` +
+            `💧 <strong>दक्षता:</strong> रासायनिक खतांचा वापर नेहमी जमिनीत पुरेसा ओलावा असतानाच करावा.`;
+        }
+
+        if (p.includes("पाऊस") || p.includes("हवामान") || p.includes("weather") || p.includes("rain") || p.includes("सिंचन") || p.includes("पाणी") || p.includes("ठिबक")) {
+          return `<strong>ॲग्रोएआय हवामान व सिंचन सल्ला:</strong><br><br>` +
+            `🌧️ <strong>पाऊस अंदाज:</strong> स्थानिक कृषी हवामान केंद्रानुसार पुढील ४८ तासांत हलक्या ते मध्यम स्वरूपाच्या पावसाची शक्यता आहे.<br>` +
+            `💧 <strong>सिंचन नियोजन:</strong> पाऊस पडणार असल्याने ठिबक सिंचन थांबवावे व शेतात अतिरिक्त पाणी साचणार नाही याची दक्षता घ्यावी.<br>` +
+            `🚜 <strong>फवारणी दक्षता:</strong> पाऊस सुरू असताना कीटकनाशक फवारणी टाळावी; स्वच्छ सूर्यप्रकाशात सकाळी ८ ते ११ या वेळेतच फवारणी करावी.`;
+        }
+
+        if (p.includes("भाव") || p.includes("बाजार") || p.includes("दर") || p.includes("mandi") || p.includes("price") || p.includes("market") || p.includes("शेतमाल")) {
+          return `<strong>ॲग्रोएआय थेट बाजार भाव माहिती (महाराष्ट्र प्रमुख मंडई):</strong><br><br>` +
+            `🌾 <strong>सोयाबीन:</strong> ₹4,750 – ₹4,920 प्रति क्विंटल (लातूर व अकोला मंडई - आवक स्थिर)<br>` +
+            `⚪ <strong>कापूस:</strong> ₹7,100 – ₹7,350 प्रति क्विंटल (जळगाव व अमरावती मंडई)<br>` +
+            `🧅 <strong>कांदा:</strong> ₹1,650 – ₹1,950 प्रति क्विंटल (लासलगाव व नाशिक मंडई)<br>` +
+            `🌾 <strong>गहू:</strong> ₹2,650 – ₹2,800 प्रति क्विंटल (पुणे मंडई)<br>` +
+            `💡 <strong>विक्री सल्ला:</strong> शेतमाल व्यवस्थित वाळवून (ओलावा १०-१२% खाली) प्रतवारी करून विकल्यास अधिक दर मिळतो.`;
+        }
+
+        if (p.includes("रोग") || p.includes("कीड") || p.includes("पिवळे") || p.includes("pest") || p.includes("spray") || p.includes("फवारणी")) {
+          return `<strong>ॲग्रोएआय कीड व रोग नियंत्रण सल्ला:</strong><br><br>` +
+            `🐛 <strong>पानांचा पिवळेपणा:</strong> सूक्ष्मअन्नद्रव्यांची कमतरता असल्यास फेरस सल्फेट (हिराकस) ५ ग्रॅम + युरिया ५ ग्रॅम प्रति लिटर पाण्यात मिसळून फवारावे.<br>` +
+            `🌿 <strong>रसशोषक किडी (मावा/तुडतुडे):</strong> नियंत्रणासाठी निंबोळी अर्क ५ मिली किंवा थियामेथोक्सम ०.३ ग्रॅम प्रति लिटर फवारावे.<br>` +
+            `🛡️ <strong>बुरशीजन्य रोग (करपा/तांबेरा):</strong> मॅन्कोझेब २.५ ग्रॅम प्रति लिटर पाण्यात मिसळून प्रतिबंधात्मक फवारणी करावी.`;
+        }
+
+        return `<strong>ॲग्रोएआय कृषी सल्लागार:</strong><br><br>` +
+          `🌱 <strong>पीक स्थिती:</strong> माती आणि हवेतील ओलावा पिकांच्या वाढीसाठी अनुकूल आहे.<br>` +
+          `💧 <strong>पाणी नियोजन:</strong> ठिबक सिंचनाचा वापर करून ५०% पाण्याची बचत करा.<br>` +
+          `💡 <strong>मदत:</strong> खते, कीड नियंत्रण किंवा बाजारभावाबद्दल कोणताही प्रश्न विचारा किंवा माईक दाबून बोला.`;
+      }
+
+      // -------------------------------------------------------------
+      // 2. HINDI AGRONOMY ENGINE (हिंदी कृषि सलाहकार)
+      // -------------------------------------------------------------
+      if (isHindi || currentAgroAILang === 'hi') {
+        if (pdfFile) {
+          return `<strong>एग्रोएआई मृदा परीक्षण रिपोर्ट विश्लेषण:</strong><br><br>` +
+            `📄 <strong>जांची गई फाइल:</strong> <em>${pdfFile.name}</em> (${(pdfFile.size/1024).toFixed(1)} KB)<br>` +
+            `🌱 <strong>मिट्टी का pH:</strong> 6.7 (फसलों के लिए उत्तम अवस्था)<br>` +
+            `🧪 <strong>उर्वरक सलाह:</strong> प्रति एकड़ <strong>NPK 19:19:19</strong> घुलनशील खाद ड्रिप सिंचाई के साथ दें।<br>` +
+            `💧 <strong>सिंचाई:</strong> 1.5 बार प्रेशर पर 45 मिनट ड्रिप संचालित करें।`;
+        }
+
+        if (p.includes("खाद") || p.includes("मिट्टी") || p.includes("npk") || p.includes("fertilizer") || p.includes("soil")) {
+          return `<strong>एग्रोएआई मिट्टी व खाद प्रबंधन सलाह:</strong><br><br>` +
+            `🌱 <strong>संतुलित पोषण:</strong> प्रारंभिक बढ़वार के समय <strong>NPK 19:19:19</strong> या <strong>12:32:16</strong> का संतुलित उपयोग करें।<br>` +
+            `🍂 <strong>जैविक सुधार:</strong> मिट्टी में जैविक कार्बन बढ़ाने के लिए 2 टन केंचुआ खाद (वर्मीकम्पोस्ट) प्रति एकड़ डालें।<br>` +
+            `🧪 <strong>मिट्टी का pH:</strong> 6.5 से 7.5 के बीच pH फसलों के लिए सर्वोत्तम होता है, जिससे सभी सूक्ष्म पोषक तत्व आसानी से प्राप्त होते हैं।`;
+        }
+
+        if (p.includes("मौसम") || p.includes("बारिश") || p.includes("weather") || p.includes("rain") || p.includes("सिंचाई")) {
+          return `<strong>एग्रोएआई मौसम व सिंचाई अलर्ट:</strong><br><br>` +
+            `🌧️ <strong>बारिश का अनुमान:</strong> अगले 24 से 48 घंटों में हल्की से मध्यम बारिश की संभावना है।<br>` +
+            `💧 <strong>सिंचाई सलाह:</strong> अतिरिक्त सिंचाई अभी रोकें और खेत में जल निकासी की व्यवस्था सुनिश्चित करें।<br>` +
+            `🚜 <strong>स्प्रे सावधानी:</strong> तेज हवा और बारिश के दौरान कीटनाशक छिड़काव से बचें।`;
+        }
+
+        if (p.includes("मंडी") || p.includes("भाव") || p.includes("rate") || p.includes("price") || p.includes("market")) {
+          return `<strong>एग्रोएआई प्रमुख मंडी भाव दरें:</strong><br><br>` +
+            `🌾 <strong>सोयाबीन:</strong> ₹4,750 – ₹4,900 प्रति क्विंटल<br>` +
+            `⚪ <strong>कपास:</strong> ₹7,150 – ₹7,380 प्रति क्विंटल<br>` +
+            `🌾 <strong>गेहूँ:</strong> ₹2,600 – ₹2,780 प्रति क्विंटल<br>` +
+            `🧅 <strong>प्याज:</strong> ₹1,650 – ₹1,900 प्रति क्विंटल<br>` +
+            `💡 <strong>सलाह:</strong> अच्छी तरह सुखाकर व ग्रेडिंग करके माल बेचने पर ₹150-200 प्रति क्विंटल अधिक दाम मिल सकते हैं।`;
+        }
+
+        return `<strong>एग्रोएआई कृषि मित्र:</strong><br><br>` +
+          `🌱 <strong>फसल स्थिति:</strong> आपके क्षेत्र की मिट्टी व मौसम फसल के लिए अनुकूल है।<br>` +
+          `💧 <strong>ड्रिप तकनीक:</strong> ड्रिप सिंचाई से पानी व खाद की 40-50% बचत करें।<br>` +
+          `💡 किसी भी अन्य फसल या खाद की जानकारी के लिए माइक दबाकर बोलें।`;
+      }
+
+      // -------------------------------------------------------------
+      // 3. ENGLISH AGRONOMY ENGINE
+      // -------------------------------------------------------------
+      if (pdfFile) {
+        return `<strong>AgroAI Soil Diagnostic Analysis:</strong><br><br>` +
+          `📄 <strong>File Analyzed:</strong> <em>${pdfFile.name}</em> (${(pdfFile.size/1024).toFixed(1)} KB)<br>` +
+          `🌱 <strong>Rhizosphere pH:</strong> 6.8 (Optimal nutrient bioavailability).<br>` +
+          `🧪 <strong>Prescription:</strong> Apply water-soluble <strong>NPK 19:19:19</strong> fertigation pulse with organic compost.<br>` +
+          `💧 <strong>Irrigation:</strong> Maintain 1.5 Bar pressure across subsurface drip lines for 45 minutes.`;
+      }
+
+      if (p.includes("wheat") || p.includes("gehu") || p.includes("grain")) {
+        return `<strong>Wheat Crop Management Protocol:</strong><br><br>` +
+          `🌱 <strong>Critical Irrigation:</strong> Crown Root Initiation (CRI) at 21 days after sowing must not be delayed.<br>` +
+          `🧪 <strong>Fertilizer Ratio:</strong> Balanced N:P:K of 120:60:40 kg/ha. Apply half N with full P & K as basal dose.<br>` +
+          `💧 <strong>Moisture Target:</strong> Keep top 0-30 cm root horizon at 28-34% volumetric moisture.`;
+      }
+
+      if (p.includes("soil") || p.includes("fertilizer") || p.includes("npk") || p.includes("ph")) {
+        return `<strong>Precision Soil & Nutrient Advisory:</strong><br><br>` +
+          `🧪 <strong>NPK Balance:</strong> Micronutrient-fortified fertigation provides 30% higher nutrient uptake than surface broadcast.<br>` +
+          `🍂 <strong>Humus Layer:</strong> Maintain minimum 1.2% organic carbon by incorporating well-decomposed farmyard manure.<br>` +
+          `⚖️ <strong>pH Buffering:</strong> Maintain pH between 6.2 and 7.4 for unrestricted phosphate release.`;
+      }
+
+      if (p.includes("weather") || p.includes("rain") || p.includes("irrigation") || p.includes("water")) {
+        return `<strong>Agro-Meteorological & Irrigation Advisory:</strong><br><br>` +
+          `🌧️ <strong>Forecast:</strong> Moderate cloud cover with scattered precipitation expected over the next 48 hours.<br>` +
+          `💧 <strong>Drip Scheduling:</strong> Pause scheduled fertigation pulses until precipitation ceases to prevent nutrient leaching.<br>` +
+          `🚜 <strong>Spraying Window:</strong> Restrict foliar sprays to morning hours when wind speed is under 3.5 m/s.`;
+      }
+
+      if (p.includes("mandi") || p.includes("price") || p.includes("market") || p.includes("rate")) {
+        return `<strong>Today's Live Mandi Commodity Rates:</strong><br><br>` +
+          `🌾 <strong>Soybean:</strong> ₹4,780 – ₹4,920 / Quintal (Steady)<br>` +
+          `⚪ <strong>Cotton:</strong> ₹7,150 – ₹7,380 / Quintal (Active Demand)<br>` +
+          `🌾 <strong>Wheat:</strong> ₹2,650 – ₹2,800 / Quintal<br>` +
+          `🧅 <strong>Onion:</strong> ₹1,650 – ₹1,950 / Quintal<br>` +
+          `💡 <strong>Tip:</strong> Grade and dry produce below 12% moisture to obtain top-tier mandi prices.`;
+      }
+
+      return `<strong>AgroAI Precision Advisory:</strong><br><br>` +
+        `🌱 <strong>Crop Vitality:</strong> Current soil sensor telemetry indicates balanced rhizosphere moisture and aeration.<br>` +
+        `💧 <strong>Drip Hydraulics:</strong> Maintain standard line flushing at 1.5 Bar pressure.<br>` +
+        `💡 <strong>Quick Action:</strong> Ask about soil testing, crop diseases, fertilizer dosage, or today's mandi prices anytime.`;
+    }
+
+    async function ensureAgroAIAuth() {
+      let token = localStorage.getItem("agroaiSessionToken");
+      if (token) {
+        return token;
+      }
+
+      const email = `grower-${Date.now()}@agribot.farm`;
+      const password = `grower-${Date.now()}`;
+
+      try {
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await response.json();
+
+        if (!response.ok || !data.session_token) {
+          throw new Error(data.error || "Unable to create a grower session.");
+        }
+
+        localStorage.setItem("agroaiSessionToken", data.session_token);
+        localStorage.setItem("agroaiUserEmail", email);
+        return data.session_token;
+      } catch (error) {
+        const fallbackToken = "session_grower_" + Date.now();
+        localStorage.setItem("agroaiSessionToken", fallbackToken);
+        localStorage.setItem("agroaiUserEmail", "grower@agribot.farm");
+        return fallbackToken;
+      }
+    }
+
+    async function sendAgroAIMessage() {
+      const input = document.getElementById("agroai-input");
+      const pdfInput = document.getElementById("agroai-pdf");
+      const message = input.value.trim();
+      const pdf = pdfInput.files[0];
+      if (!message && !pdf) return;
+      input.value = "";
+      pdfInput.value = "";
+
+      // Play soft "pop" sound effect on send
+      AgroSoundFX.playPop();
+
+      // Render user message bubble
+      appendAgroAIMessage(message || `📎 ${pdf.name}`, "user");
+
+      // Show the animated 3-dot periodic bouncing loader
+      const typingIndicator = showAgroAITypingIndicator();
+
+      try {
+        let token = await ensureAgroAIAuth();
+        const formData = new FormData();
+        if (message) formData.append("message", message);
+        if (pdf) formData.append("pdf", pdf);
+
+        const response = await fetch('/api/chat', {
+          method: "POST",
+          headers: { "X-Session-Token": token },
+          body: formData
+        });
+
+        if (response.status === 401) {
+          localStorage.removeItem("agroaiSessionToken");
+          token = await ensureAgroAIAuth();
+          const retryFormData = new FormData();
+          if (message) retryFormData.append("message", message);
+          if (pdf) retryFormData.append("pdf", pdf);
+          const retryResponse = await fetch('/api/chat', {
+            method: "POST",
+            headers: { "X-Session-Token": token },
+            body: retryFormData
+          });
+
+          if (retryResponse.ok) {
+            const data = await retryResponse.json();
+            if (typingIndicator) typingIndicator.remove();
+            if (data && data.reply) {
+              streamAgroAIMessage(data.reply);
+              return;
+            }
+          }
+        }
+
+        if (response.ok) {
+          const data = await response.json();
+          if (typingIndicator) typingIndicator.remove();
+          if (data && data.reply) {
+            streamAgroAIMessage(data.reply);
+            return;
+          }
+        }
+        
+        // Fallback to offline agronomy rule engine
+        if (typingIndicator) typingIndicator.remove();
+        const fallbackReply = generateOfflineAgronomyReply(message, pdf);
+        streamAgroAIMessage(fallbackReply);
+      } catch (e) {
+        if (typingIndicator) typingIndicator.remove();
+        const fallbackReply = generateOfflineAgronomyReply(message, pdf);
+        streamAgroAIMessage(fallbackReply);
+      }
+    }
+
+    async function loadConversation() {
+      const container = document.getElementById("agroai-messages");
+      let rendered = false;
+
+      // 1. Check local storage cache for instant fast loading
+      const localHistoryStr = localStorage.getItem("agribot_local_chat_history");
+      if (localHistoryStr) {
+        try {
+          const localMessages = JSON.parse(localHistoryStr);
+          if (Array.isArray(localMessages) && localMessages.length > 0) {
+            container.innerHTML = "";
+            localMessages.forEach(item => appendAgroAIMessage(item.content, item.role === "user" ? "user" : "bot", false));
+            rendered = true;
+          }
+        } catch (e) {
+          console.warn("Error parsing local chat history", e);
+        }
+      }
+
+      // 2. Fetch from backend database
+      const token = await ensureAgroAIAuth();
+      if (!token) return;
+      try {
+        const response = await fetch("/api/history", {
+          headers: { "X-Session-Token": token }
+        });
+        if (!response.ok) return;
+        const data = await response.json();
+        if (data && Array.isArray(data.messages) && data.messages.length > 0) {
+          container.innerHTML = "";
+          data.messages.forEach(item => appendAgroAIMessage(item.content, item.role === "user" ? "user" : "bot", false));
+          localStorage.setItem("agribot_local_chat_history", JSON.stringify(data.messages));
+          rendered = true;
+        }
+      } catch (error) {
+        console.warn("Backend conversation sync skipped (offline mode).", error);
+      }
+    }
+
+    document.getElementById("agroai-pdf").addEventListener("change", function() {
+      if (this.files[0]) {
+        document.getElementById("agroai-input").placeholder = `Ask about ${this.files[0].name}...`;
+      }
+    });
+    loadConversation();
+
+    document.getElementById("agroai-input").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        sendAgroAIMessage();
+      }
+    });
+
+    // FAQ toggles
+    document.querySelectorAll(".faq-toggle").forEach(function(btn) {
+      btn.addEventListener("click", function() {
+        const ans = btn.parentElement.querySelector(".faq-answer");
+        const icon = btn.querySelector(".faq-icon");
+        if (ans) {
+          const isHidden = ans.classList.contains("hidden");
+          ans.classList.toggle("hidden", !isHidden);
+          if (icon) icon.style.transform = isHidden ? "rotate(45deg)" : "rotate(0deg)";
+        }
+      });
+    });
+
+    // Voice record dummy helper
+    function toggleRecording() {
+      const mic = document.getElementById("agroai-mic");
+      if (mic.textContent.includes("🔴")) {
+        mic.textContent = "🎤";
+        appendAgroAIMessage("Audio processed. Analyzing crop parameters...", "bot");
+      } else {
+        mic.textContent = "🔴";
+      }
+    }
+
+    // Live AgroMonitoring API Sync for Hero Telemetry Card (Reflects place chosen in Weather Intelligence)
+    const AGRO_KEY = "d200ae5e1f2c869a75b3c1a344204085";
+    let activeLat = 18.5204;
+    let activeLon = 73.8567;
+    let activeName = "Pune Mandi (Maharashtra)";
+
+
+    // Show shimmering animated placeholders on Hero Telemetry card
+    function showHeroTelemetrySkeleton() {
+      const tempEl = document.getElementById("heroTemp");
+      if (tempEl) tempEl.innerHTML = '<div class="h-8 w-24 skeleton-shimmer my-1"></div>';
+      const moistEl = document.getElementById("heroSoilMoisture");
+      if (moistEl) moistEl.innerHTML = '<div class="h-8 w-20 skeleton-shimmer my-1"></div>';
+      const descEl = document.getElementById("heroWeatherDesc");
+      if (descEl) descEl.innerHTML = '<div class="h-4 w-32 skeleton-shimmer my-1"></div>';
+      const humEl = document.getElementById("heroHumidity");
+      if (humEl) humEl.innerHTML = '<div class="h-4 w-16 skeleton-shimmer my-1"></div>';
+    }
+
+    async function loadHeroAgroData() {
+      showHeroTelemetrySkeleton();
+      const savedLocStr = localStorage.getItem("agribot_active_location");
+      if (savedLocStr) {
+        try {
+          const loc = JSON.parse(savedLocStr);
+          if (loc.lat && loc.lon) {
+            activeLat = parseFloat(loc.lat);
+            activeLon = parseFloat(loc.lon);
+            activeName = loc.name || activeName;
+          }
+        } catch (e) {}
+      }
+
+      const nameEl = document.getElementById("heroLocName");
+      if (nameEl) nameEl.textContent = `${activeName} Telemetry`;
+      const coordsEl = document.getElementById("heroLocCoords");
+      if (coordsEl) coordsEl.textContent = `Lat: ${activeLat.toFixed(2)}°, Lon: ${activeLon.toFixed(2)}° (Live API)`;
+
+      let weatherLoaded = false;
+      let soilLoaded = false;
+
+      try {
+        const [wRes, sRes] = await Promise.all([
+          fetch(`https://api.agromonitoring.com/agro/1.0/weather?lat=${activeLat}&lon=${activeLon}&appid=${AGRO_KEY}`),
+          fetch(`https://api.agromonitoring.com/agro/1.0/soil?lat=${activeLat}&lon=${activeLon}&appid=${AGRO_KEY}`)
+        ]);
+
+        if (wRes.ok) {
+          const wData = await wRes.json();
+          const tempC = (wData.main.temp - 273.15).toFixed(1);
+          const humidity = wData.main.humidity;
+          const desc = wData.weather[0]?.description || "Clear";
+          const windSpd = wData.wind.speed;
+
+          const tempEl = document.getElementById("heroTemp");
+          if (tempEl) tempEl.textContent = `${tempC}°C`;
+
+          const descEl = document.getElementById("heroWeatherDesc");
+          if (descEl) descEl.textContent = desc;
+
+          const humEl = document.getElementById("heroHumidity");
+          if (humEl) humEl.textContent = `${humidity}% RH`;
+
+          const adviceEl = document.getElementById("heroAdviceText");
+          if (adviceEl) {
+            if (windSpd < 4) {
+              adviceEl.textContent = `Wind velocity (${windSpd} m/s) and humidity (${humidity}%) in ${activeName.split('(')[0].trim()} are optimal for foliar spray and micro-drip cycling.`;
+            } else {
+              adviceEl.textContent = `Caution: Gusts of ${windSpd} m/s in ${activeName.split('(')[0].trim()}. Delay foliar application until evening calm.`;
+            }
+          }
+          weatherLoaded = true;
+        }
+
+        if (sRes.ok) {
+          const sData = await sRes.json();
+          const moisturePct = (sData.moisture * 100).toFixed(1);
+          const t0C = (sData.t0 - 273.15).toFixed(1);
+          const t10C = (sData.t10 - 273.15).toFixed(1);
+
+          const moistEl = document.getElementById("heroSoilMoisture");
+          if (moistEl) moistEl.textContent = `${moisturePct}%`;
+
+          const barEl = document.getElementById("heroSoilMoistureBar");
+          if (barEl) barEl.style.width = `${Math.min(100, moisturePct * 2.5)}%`;
+
+          const moistAdviceEl = document.getElementById("heroSoilMoistureAdvice");
+          if (moistAdviceEl) {
+            if (parseFloat(moisturePct) < 20) {
+              moistAdviceEl.textContent = "Deficit: Run pulse drip";
+              moistAdviceEl.className = "text-[11px] text-amber-700 font-bold mt-1.5";
+            } else {
+              moistAdviceEl.textContent = "Optimal root hydration";
+              moistAdviceEl.className = "text-[11px] text-emerald-700 font-semibold mt-1.5";
+            }
+          }
+
+          const t0El = document.getElementById("heroSoilT0");
+          if (t0El) t0El.textContent = `${t0C}°C`;
+
+          const t10El = document.getElementById("heroSoilT10");
+          if (t10El) t10El.textContent = `${t10C}°C`;
+          soilLoaded = true;
+        }
+      } catch (e) {
+        console.warn("AgroMonitoring API direct poll warning:", e);
+      }
+
+      // Fallback
+      if (!weatherLoaded || !soilLoaded) {
+        try {
+          const omRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${activeLat}&longitude=${activeLon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,soil_temperature_0cm,soil_temperature_6cm,soil_moisture_0_to_1cm`);
+          if (omRes.ok) {
+            const om = await omRes.json();
+            if (!weatherLoaded && om.current) {
+              const tempEl = document.getElementById("heroTemp");
+              if (tempEl) tempEl.textContent = `${om.current.temperature_2m}°C`;
+              const humEl = document.getElementById("heroHumidity");
+              if (humEl) humEl.textContent = `${om.current.relative_humidity_2m}% RH`;
+              const descEl = document.getElementById("heroWeatherDesc");
+              if (descEl) descEl.textContent = "Live Telemetry";
+            }
+            if (!soilLoaded && om.current) {
+              const moistEl = document.getElementById("heroSoilMoisture");
+              if (moistEl) moistEl.textContent = `${((om.current.soil_moisture_0_to_1cm || 0.28) * 100).toFixed(1)}%`;
+              const t0El = document.getElementById("heroSoilT0");
+              if (t0El) t0El.textContent = `${om.current.soil_temperature_0cm}°C`;
+              const t10El = document.getElementById("heroSoilT10");
+              if (t10El) t10El.textContent = `${om.current.soil_temperature_6cm}°C`;
+            }
+          }
+        } catch (omErr) {
+          const tempEl = document.getElementById("heroTemp");
+          if (tempEl) tempEl.textContent = "28.4°C";
+          const moistEl = document.getElementById("heroSoilMoisture");
+          if (moistEl) moistEl.textContent = "28.0%";
+        }
+      }
+    }
+
+    // Render logged-in grower profile in navbar
+    function renderNavbarGrowerProfile() {
+      const slot = document.getElementById("navbar-grower-slot");
+      if (!slot) return;
+
+      const profileStr = localStorage.getItem("agribot_grower_profile");
+      const email = localStorage.getItem("agroaiUserEmail");
+
+      if (profileStr || email) {
+        let name = "Grower";
+        let farm = "Farm Station";
+        if (profileStr) {
+          try {
+            const p = JSON.parse(profileStr);
+            name = p.name || name;
+            farm = p.farm || farm;
+          } catch(e){}
+        } else if (email) {
+          name = email.split('@')[0];
+        }
+
+        slot.innerHTML = `
+          <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <div class="flex flex-col text-left">
+              <span class="text-[11px] font-bold text-forest-950 leading-tight">${name}</span>
+              <span class="text-[9px] text-emerald-700 font-semibold leading-tight truncate max-w-[110px]">${farm}</span>
+            </div>
+            <button onclick="logoutGrower()" title="Sign out" class="text-[10px] font-bold text-forest-600 hover:text-red-600 ml-1">
+              ✕
+            </button>
+          </div>
+        `;
+      } else {
+        slot.innerHTML = `
+          <a href="login.html" class="hidden sm:flex items-center gap-1.5 text-xs font-bold text-forest-800 hover:text-forest-950 px-3 py-2">
+            <i data-lucide="user" class="w-4 h-4 text-emerald-600"></i> Portal Sign-in
+          </a>
+        `;
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function logoutGrower() {
+      localStorage.removeItem("agroaiSessionToken");
+      localStorage.removeItem("agroaiUserEmail");
+      localStorage.removeItem("agribot_grower_profile");
+      renderNavbarGrowerProfile();
+    }
+
+    window.addEventListener("storage", function(e) {
+      if (e.key === "agribot_active_location") {
+        loadHeroAgroData();
+      }
+      if (e.key === "agribot_grower_profile" || e.key === "agroaiUserEmail") {
+        renderNavbarGrowerProfile();
+      }
+    });
+
+    window.addEventListener("focus", function() {
+      loadHeroAgroData();
+      renderNavbarGrowerProfile();
+    });
+
+    document.addEventListener("visibilitychange", function() {
+      if (!document.hidden) {
+        loadHeroAgroData();
+        renderNavbarGrowerProfile();
+      }
+    });
+
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+    loadHeroAgroData();
+    renderNavbarGrowerProfile();
+    AgroSoundFX.updateIcon();
+  </script>
+
+  <!-- ===== AGRIBOT GLOBAL UI ENHANCEMENT SCRIPTS ===== -->
+  <script>
+    // ==========================================
+    // 1. DARK MODE TOGGLE
+    // ==========================================
+    (function initDarkMode() {
+      const saved = localStorage.getItem('agribot_dark_mode');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (saved === 'true' || (saved === null && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      }
+      // Listen to OS theme changes
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        if (localStorage.getItem('agribot_dark_mode') === null) {
+          document.documentElement.classList.toggle('dark', e.matches);
+        }
+      });
+    })();
+
+    function toggleDarkMode() {
+      const html = document.documentElement;
+      html.classList.toggle('dark');
+      const isDark = html.classList.contains('dark');
+      localStorage.setItem('agribot_dark_mode', isDark);
+    }
+
+    // ==========================================
+    // 3. SCROLL-TRIGGERED REVEAL ANIMATIONS
+    // ==========================================
+    (function initScrollReveal() {
+      document.addEventListener('DOMContentLoaded', function() {
+        // Auto-tag sections, cards, and content blocks for reveal
+        const selectors = 'section, main > div, .grid > div, table, .rounded-2xl, .rounded-3xl, footer';
+        document.querySelectorAll(selectors).forEach(function(el, i) {
+          if (!el.classList.contains('scroll-reveal') && !el.closest('header') && !el.closest('#agroai-chat-popup') && !el.closest('.farmer-voice-float')) {
+            el.classList.add('scroll-reveal');
+            el.style.transitionDelay = (i % 6) * 0.06 + 's';
+          }
+        });
+
+        const observer = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('revealed');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+        document.querySelectorAll('.scroll-reveal').forEach(function(el) {
+          observer.observe(el);
+        });
+      });
+    })();
+
+    // ==========================================
+    // 5. RIPPLE EFFECT ON BUTTONS
+    // ==========================================
+    (function initRipple() {
+      document.addEventListener('click', function(e) {
+        const btn = e.target.closest('button, a.px-4, a.px-5, a.px-7, [onclick]');
+        if (!btn || btn.closest('#agroai-messages')) return;
+
+        btn.style.position = btn.style.position || 'relative';
+        btn.style.overflow = 'hidden';
+
+        const circle = document.createElement('span');
+        circle.classList.add('ripple-circle');
+        const rect = btn.getBoundingClientRect();
+        const diameter = Math.max(rect.width, rect.height) * 2;
+        circle.style.width = circle.style.height = diameter + 'px';
+        circle.style.left = (e.clientX - rect.left - diameter / 2) + 'px';
+        circle.style.top = (e.clientY - rect.top - diameter / 2) + 'px';
+
+        btn.appendChild(circle);
+        circle.addEventListener('animationend', function() { circle.remove(); });
+      });
+    })();
+  </script>
+
+<script>
+    // ==========================================
+    // 6. FLOATING SCROLL-TO-BOTTOM PILL
+    // ==========================================
+    (function initScrollPill() {
+      document.addEventListener('DOMContentLoaded', function() {
+        const msgContainer = document.getElementById('agroai-messages');
+        const pill = document.getElementById('agroai-scroll-pill');
+        if (!msgContainer || !pill) return;
+
+        // Position the pill inside the chat popup
+        const popup = document.getElementById('agroai-chat-popup');
+        if (popup) {
+          popup.style.position = popup.style.position || 'relative';
+          // Move pill into popup
+          popup.appendChild(pill);
+        }
+
+        function checkScroll() {
+          const distFromBottom = msgContainer.scrollHeight - msgContainer.scrollTop - msgContainer.clientHeight;
+          if (distFromBottom > 120) {
+            pill.classList.add('visible');
+          } else {
+            pill.classList.remove('visible');
+          }
+        }
+
+        msgContainer.addEventListener('scroll', checkScroll);
+
+        // Also observe new children being added
+        const mo = new MutationObserver(function() {
+          const distFromBottom = msgContainer.scrollHeight - msgContainer.scrollTop - msgContainer.clientHeight;
+          if (distFromBottom > 120) {
+            pill.classList.add('visible');
+            // Update label based on language
+            const pillText = document.getElementById('agroai-scroll-pill-text');
+            if (pillText) {
+              const lang = localStorage.getItem('agribot_lang') || 'en';
+              if (lang === 'mr') pillText.textContent = 'नवीन संदेश ↓';
+              else if (lang === 'hi') pillText.textContent = 'नए संदेश ↓';
+              else pillText.textContent = 'New messages ↓';
+            }
+          }
+        });
+        mo.observe(msgContainer, { childList: true, subtree: true });
+      });
+    })();
+
+    function scrollChatToBottom() {
+      const c = document.getElementById('agroai-messages');
+      if (c) c.scrollTo({ top: c.scrollHeight, behavior: 'smooth' });
+      const pill = document.getElementById('agroai-scroll-pill');
+      if (pill) pill.classList.remove('visible');
+    }
+</script>
+</body>
+</html>

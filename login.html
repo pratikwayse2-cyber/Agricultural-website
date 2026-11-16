@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grower Portal Access — AgriBot AgroAI</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts: Plus Jakarta Sans, Outfit & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Outfit"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            forest: {
+              950: '#04140A',
+              900: '#092414',
+              850: '#0F331E',
+              800: '#144227',
+              700: '#1B5E38',
+              600: '#227D4C',
+            },
+            emerald: {
+              500: '#10B981',
+              400: '#34D399',
+            },
+            sprout: {
+              300: '#86EFAC',
+              400: '#4ADE80',
+              500: '#22C55E',
+            },
+            lime: {
+              300: '#E4FA8E',
+              400: '#CFF632',
+              500: '#B4E618',
+            },
+            meadow: {
+              50: '#F7FAF8',
+              100: '#EEF5F0',
+              200: '#DCECE0',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .bg-leaf-pattern {
+      background:
+        radial-gradient(circle at 10% 20%, rgba(34, 197, 94, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(207, 246, 50, 0.1) 0%, transparent 40%),
+        linear-gradient(135deg, #F8FAF8 0%, #EBF5ED 100%);
+    }
+  </style>
+
+  <!-- ===== AGRIBOT GLOBAL UI ENHANCEMENTS ===== -->
+  <style>
+    /* ==========================================
+       1. DARK MODE — CSS Custom Properties
+       ========================================== */
+    :root {
+      --bg-primary: #F8FAF9;
+      --bg-card: #FFFFFF;
+      --bg-header: rgba(255,255,255,0.92);
+      --text-primary: #092414;
+      --text-secondary: #3B6B4A;
+      --border-primary: #DCECE0;
+      --border-subtle: #EEF5F0;
+      --shadow-card: 0 4px 24px rgba(9,36,20,0.07);
+      --bg-input: #F0F5F1;
+    }
+    .dark {
+      --bg-primary: #0A1A10;
+      --bg-card: #112A18;
+      --bg-header: rgba(10,26,16,0.95);
+      --text-primary: #E8F5EC;
+      --text-secondary: #A3C9B0;
+      --border-primary: #1E3D28;
+      --border-subtle: #162E1E;
+      --shadow-card: 0 4px 24px rgba(0,0,0,0.35);
+      --bg-input: #162E1E;
+    }
+
+    /* Smooth transition on theme change */
+    body, header, main, section, footer, .dark-transition {
+      transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+    }
+
+    /* Dark mode overrides for common elements */
+    /* Dark mode color inversion removed — site is styled for crisp botanical light theme */
+    .dark body, body.dark { background-color: #F8FAF9 !important; color: #092414 !important; }
+    .dark header { background: rgba(255,255,255,0.95) !important; border-color: #DCECE0 !important; }
+    .dark main { color: inherit; }
+    .dark section { border-color: #DCECE0 !important; }
+
+    /* Dark Mode Toggle Button */
+    .dark-mode-toggle {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border-primary);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .dark-mode-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 12px rgba(163,230,53,0.3);
+    }
+    .dark-mode-toggle .icon-sun,
+    .dark-mode-toggle .icon-moon {
+      position: absolute;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
+    }
+    .dark-mode-toggle .icon-sun  { opacity: 1; transform: rotate(0deg) scale(1); }
+    .dark-mode-toggle .icon-moon { opacity: 0; transform: rotate(-90deg) scale(0.5); }
+    .dark .dark-mode-toggle .icon-sun  { opacity: 0; transform: rotate(90deg) scale(0.5); }
+    .dark .dark-mode-toggle .icon-moon { opacity: 1; transform: rotate(0deg) scale(1); }
+    .dark .dark-mode-toggle {
+      background: #1E3D28;
+      border-color: #2D5A3A;
+      color: #A3E635;
+    }
+
+        /* Page load smooth fade (NO transform on body) */
+    @keyframes pageFadeIn { from { opacity: 0.92; } to { opacity: 1; } }
+    body { animation: pageFadeIn 0.2s ease-out; }
+
+    /* ==========================================
+       3. SCROLL-TRIGGERED REVEAL ANIMATIONS
+       ========================================== */
+    .scroll-reveal {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .scroll-reveal.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ==========================================
+       4. TOOLTIP POPOVERS
+       ========================================== */
+    .agri-tooltip {
+      position: relative;
+    }
+    .agri-tooltip::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(6px);
+      background: #092414;
+      color: #E8F5EC;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.5;
+      padding: 8px 12px;
+      border-radius: 10px;
+      white-space: nowrap;
+      max-width: 280px;
+      white-space: normal;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 100;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+    .agri-tooltip::before {
+      content: '';
+      position: absolute;
+      bottom: calc(100% + 2px);
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #092414;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      z-index: 100;
+    }
+    .agri-tooltip:hover::after,
+    .agri-tooltip:hover::before {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .agri-tooltip:hover::before {
+      transform: translateX(-50%);
+    }
+    .dark .agri-tooltip::after {
+      background: #A3E635;
+      color: #052E16;
+    }
+    .dark .agri-tooltip::before {
+      border-top-color: #A3E635;
+    }
+
+    /* ==========================================
+       5. RIPPLE EFFECT ON BUTTONS
+       ========================================== */
+    .ripple-host {
+      position: relative;
+      overflow: hidden;
+    }
+    .ripple-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(163, 230, 53, 0.35);
+      transform: scale(0);
+      animation: rippleExpand 0.5s ease-out forwards;
+      pointer-events: none;
+    }
+    .dark .ripple-circle {
+      background: rgba(163, 230, 53, 0.2);
+    }
+    @keyframes rippleExpand {
+      to { transform: scale(4); opacity: 0; }
+    }
+
+    /* ==========================================
+       6. FLOATING SCROLL-TO-BOTTOM PILL (Chat)
+       ========================================== */
+    .scroll-bottom-pill {
+      position: absolute;
+      bottom: 72px;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: #092414;
+      color: #A3E635;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      border: 1.5px solid rgba(163,230,53,0.3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .scroll-bottom-pill.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+    .scroll-bottom-pill:hover {
+      background: #144227;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    }
+  </style>
+
+</head>
+<body class="bg-leaf-pattern min-h-screen flex items-center justify-center p-4 sm:p-6 text-forest-900 font-sans antialiased">
+
+  <main class="w-full max-w-lg bg-white rounded-3xl p-6 sm:p-10 border border-meadow-200 shadow-2xl relative overflow-hidden my-8">
+    
+    <!-- Top Decorative Gradient Ribbon -->
+    <div class="absolute top-0 left-0 right-0 h-2.5 bg-gradient-to-r from-emerald-500 via-lime-400 to-emerald-600"></div>
+
+    <!-- Brand Header -->
+    <div class="text-center mb-6">
+      <a href="chatbot_page.html" class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-forest-900 to-forest-700 text-lime-400 shadow-md mb-3 group hover:scale-105 transition">
+        <i data-lucide="sprout" class="w-8 h-8"></i>
+      </a>
+      <h1 class="font-display font-black text-2xl sm:text-3xl text-forest-950 tracking-tight">
+        AgriBot Portal
+      </h1>
+      <p class="text-xs text-forest-700 font-semibold mt-1">
+        Farmer & Agronomist Command Access
+      </p>
+    </div>
+
+    <!-- Tabs: Sign In vs Register -->
+    <div class="flex rounded-2xl bg-meadow-100 p-1.5 mb-6 border border-meadow-200">
+      <button 
+        id="tab-signin-btn" 
+        onclick="switchAuthTab('signin')" 
+        class="flex-1 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-white text-forest-950 shadow-sm cursor-pointer"
+      >
+        <i data-lucide="log-in" class="w-3.5 h-3.5 text-emerald-600"></i>
+        <span>Grower Sign-In</span>
+      </button>
+      <button 
+        id="tab-register-btn" 
+        onclick="switchAuthTab('register')" 
+        class="flex-1 py-2 rounded-xl text-xs font-semibold text-forest-700 hover:text-forest-950 transition flex items-center justify-center gap-1.5 cursor-pointer"
+      >
+        <i data-lucide="user-plus" class="w-3.5 h-3.5 text-forest-600"></i>
+        <span>New Farm Registration</span>
+      </button>
+    </div>
+
+    <!-- Active Profile Alert if already logged in -->
+    <div id="existing-profile-banner" class="hidden mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-start justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs">
+          👤
+        </div>
+        <div>
+          <h4 class="text-xs font-bold text-forest-950" id="current-grower-name">Active Session: Grower</h4>
+          <p class="text-[11px] text-forest-700" id="current-grower-email">email@agribot.farm</p>
+        </div>
+      </div>
+      <button onclick="clearSession()" class="text-[11px] font-bold text-red-600 hover:underline cursor-pointer">
+        Sign Out
+      </button>
+    </div>
+
+    <!-- SIGN IN FORM -->
+    <form id="signin-form" class="space-y-4" novalidate onsubmit="handleSignIn(event)">
+      <div>
+        <label for="signin-email" class="block text-xs font-bold text-forest-800 uppercase tracking-wider mb-1.5">
+          Grower Email / ID:
+        </label>
+        <div class="relative">
+          <input 
+            id="signin-email" 
+            name="email" 
+            type="email" 
+            placeholder="grower@agribot.farm" 
+            value="grower@agribot.farm"
+            autocomplete="email" 
+            required
+            class="w-full bg-meadow-50 border border-meadow-200 rounded-xl px-4 py-3 text-sm text-forest-950 font-medium outline-none focus:border-emerald-500 focus:bg-white transition"
+          >
+          <i data-lucide="mail" class="w-4 h-4 text-forest-600 absolute right-4 top-1/2 -translate-y-1/2"></i>
+        </div>
+      </div>
+
+      <div>
+        <label for="signin-password" class="block text-xs font-bold text-forest-800 uppercase tracking-wider mb-1.5">
+          Access Key / Password:
+        </label>
+        <div class="relative">
+          <input 
+            id="signin-password" 
+            name="password" 
+            type="password" 
+            placeholder="••••••••" 
+            value="agriculture2026"
+            autocomplete="current-password" 
+            required 
+            class="w-full bg-meadow-50 border border-meadow-200 rounded-xl px-4 py-3 text-sm text-forest-950 font-medium outline-none focus:border-emerald-500 focus:bg-white transition"
+          >
+          <button 
+            type="button" 
+            onclick="togglePasswordVisibility('signin-password', this)" 
+            class="absolute right-4 top-1/2 -translate-y-1/2 text-forest-600 hover:text-forest-950 cursor-pointer"
+          >
+            <i data-lucide="eye" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Remember & Forgot Key -->
+      <div class="flex items-center justify-between text-xs py-1">
+        <label class="flex items-center gap-2 cursor-pointer text-forest-700 font-semibold">
+          <input id="remember-me" type="checkbox" checked class="rounded accent-emerald-600 w-3.5 h-3.5">
+          Remember Field Node
+        </label>
+        <a href="javascript:void(0)" onclick="alert('Access Key reset link has been dispatched to your registered email.')" class="text-emerald-700 font-bold hover:underline">Forgot Key?</a>
+      </div>
+
+      <!-- Submit Button -->
+      <button 
+        type="submit" 
+        id="signin-submit-btn"
+        class="w-full bg-forest-900 hover:bg-forest-800 text-lime-300 hover:text-lime-200 py-3.5 rounded-xl font-bold text-sm tracking-wide shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 mt-2 cursor-pointer"
+      >
+        <span>Enter Command Center</span>
+        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+      </button>
+
+      <p id="signin-error" class="text-xs text-red-600 font-semibold text-center min-h-[16px]"></p>
+      <p id="signin-success" class="text-xs text-emerald-700 font-bold text-center min-h-[16px]"></p>
+    </form>
+
+    <!-- NEW FARM REGISTRATION FORM -->
+    <form id="register-form" class="space-y-4 hidden" novalidate onsubmit="handleRegister(event)">
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label for="reg-name" class="block text-xs font-bold text-forest-800 uppercase tracking-wider mb-1">
+            Grower Full Name:
+          </label>
+          <input 
+            id="reg-name" 
+            type="text" 
+            placeholder="e.g. Rajesh Patil" 
+            required
+            class="w-full bg-meadow-50 border border-meadow-200 rounded-xl px-3 py-2.5 text-sm text-forest-950 font-medium outline-none focus:border-emerald-500 focus:bg-white transition"
+          >
+        </div>
+        <div>
+          <label for="reg-farm" class="block text-xs font-bold text-forest-800 uppercase tracking-wider mb-1">
+            Farm / Estate Name:
+          </label>
+          <input 
+            id="reg-farm" 
+            type="text" 
+            placeholder="e.g. Green Valley Agro" 
+            required
+            class="w-full bg-meadow-50 border border-meadow-200 rounded-xl px-3 py-2.5 text-sm text-forest-950 font-medium outline-none focus:border-emerald-500 focus:bg-white transition"
+          >
+        </div>
+      </div>
+
+      <div>
+        <label for="reg-email" class="block text-xs font-bold text-forest-800 uppercase tracking-wider mb-1">
+          Registered Email Address:
+        </label>
+        <div class="relative">
+          <input 
+            id="reg-email" 
+            type="email" 
+            placeholder="grower@farm.in" 
+            required
+            class="w-full bg-meadow-50 border border-meadow-200 rounded-xl px-3 py-2.5 text-sm text-forest-950 font-medium outline-none focus:border-emerald-500 focus:bg-white transition"
+          >
+          <i data-lucide="mail" class="w-4 h-4 text-forest-600 absolute right-3 top-1/2 -translate-y-1/2"></i>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label for="reg-crop" class="block text-xs font-bold text-forest-800 uppercase tracking-wider mb-1">
+            Primary Crop:
+          </label>
+          <select id="reg-crop" class="w-full bg-meadow-50 border border-meadow-200 rounded-xl px-3 py-2.5 text-xs text-forest-950 font-bold outline-none focus:border-emerald-500 cursor-pointer">
+            <option value="Cotton">Cotton (Kharif Cash Crop)</option>
+            <option value="Wheat">Wheat (Rabi Grain)</option>
+            <option value="Sugarcane">Sugarcane (Perennial)</option>
+            <option value="Paddy">Paddy / Rice</option>
+            <option value="Soybean">Soybean / Oilseeds</option>
+            <option value="Horticulture">Horticulture / Fruits</option>
+          </select>
+        </div>
+        <div>
+          <label for="reg-acres" class="block text-xs font-bold text-forest-800 uppercase tracking-wider mb-1">
+            Total Acreage:
+          </label>
+          <input 
+            id="reg-acres" 
+            type="number" 
+            placeholder="e.g. 15 Acres" 
+            value="12"
+            min="1"
+            class="w-full bg-meadow-50 border border-meadow-200 rounded-xl px-3 py-2.5 text-sm text-forest-950 font-medium outline-none focus:border-emerald-500 focus:bg-white transition"
+          >
+        </div>
+      </div>
+
+      <div>
+        <label for="reg-password" class="block text-xs font-bold text-forest-800 uppercase tracking-wider mb-1">
+          Create Access Key / Password:
+        </label>
+        <div class="relative">
+          <input 
+            id="reg-password" 
+            type="password" 
+            placeholder="Choose secure access key" 
+            required 
+            minlength="4"
+            class="w-full bg-meadow-50 border border-meadow-200 rounded-xl px-3 py-2.5 text-sm text-forest-950 font-medium outline-none focus:border-emerald-500 focus:bg-white transition"
+          >
+          <button 
+            type="button" 
+            onclick="togglePasswordVisibility('reg-password', this)" 
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-forest-600 hover:text-forest-950 cursor-pointer"
+          >
+            <i data-lucide="eye" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Submit Register Button -->
+      <button 
+        type="submit" 
+        id="reg-submit-btn"
+        class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold text-sm tracking-wide shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 mt-2 cursor-pointer"
+      >
+        <span>Register Farm & Save Profile</span>
+        <i data-lucide="check-circle" class="w-4 h-4"></i>
+      </button>
+
+      <p id="reg-error" class="text-xs text-red-600 font-semibold text-center min-h-[16px]"></p>
+      <p id="reg-success" class="text-xs text-emerald-700 font-bold text-center min-h-[16px]"></p>
+    </form>
+
+    <!-- Divider -->
+    <div class="flex items-center gap-3 my-6">
+      <div class="flex-1 h-px bg-meadow-200"></div>
+      <span class="text-[10px] font-bold uppercase tracking-widest text-forest-600">Quick Modules</span>
+      <div class="flex-1 h-px bg-meadow-200"></div>
+    </div>
+
+    <!-- Quick Navigation Links -->
+    <div class="grid grid-cols-2 gap-3">
+      <a href="chatbot_page.html" class="flex items-center justify-center gap-2 p-2.5 rounded-xl border border-meadow-200 bg-meadow-50 hover:bg-meadow-100 text-xs font-bold text-forest-800 transition">
+        <i data-lucide="layout-dashboard" class="w-3.5 h-3.5 text-emerald-600"></i> Command Center
+      </a>
+      <a href="soil_intelligence.html" class="flex items-center justify-center gap-2 p-2.5 rounded-xl border border-meadow-200 bg-meadow-50 hover:bg-meadow-100 text-xs font-bold text-forest-800 transition">
+        <i data-lucide="layers" class="w-3.5 h-3.5 text-emerald-600"></i> Soil Intelligence
+      </a>
+    </div>
+
+    <!-- Footer Note -->
+    <p class="text-center text-[11px] text-forest-600 mt-6">
+      Encrypted Farm Node Security • <a href="weather_intelligence.html" class="text-emerald-700 font-bold hover:underline">Weather Radar</a>
+    </p>
+
+  </main>
+
+  <script>
+    // Tab switching
+    function switchAuthTab(tab) {
+      const signinBtn = document.getElementById("tab-signin-btn");
+      const regBtn = document.getElementById("tab-register-btn");
+      const signinForm = document.getElementById("signin-form");
+      const regForm = document.getElementById("register-form");
+
+      if (tab === 'signin') {
+        signinBtn.className = "flex-1 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-white text-forest-950 shadow-sm cursor-pointer";
+        regBtn.className = "flex-1 py-2 rounded-xl text-xs font-semibold text-forest-700 hover:text-forest-950 transition flex items-center justify-center gap-1.5 cursor-pointer";
+        signinForm.classList.remove("hidden");
+        regForm.classList.add("hidden");
+      } else {
+        regBtn.className = "flex-1 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-white text-forest-950 shadow-sm cursor-pointer";
+        signinBtn.className = "flex-1 py-2 rounded-xl text-xs font-semibold text-forest-700 hover:text-forest-950 transition flex items-center justify-center gap-1.5 cursor-pointer";
+        regForm.classList.remove("hidden");
+        signinForm.classList.add("hidden");
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // Toggle Password View
+    function togglePasswordVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const isPass = input.type === "password";
+      input.type = isPass ? "text" : "password";
+      btn.innerHTML = isPass ? '<i data-lucide="eye-off" class="w-4 h-4"></i>' : '<i data-lucide="eye" class="w-4 h-4"></i>';
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // Check existing stored profile
+    function checkExistingProfile() {
+      const email = localStorage.getItem("agroaiUserEmail");
+      const profileStr = localStorage.getItem("agribot_grower_profile");
+      if (email || profileStr) {
+        let name = "Registered Grower";
+        if (profileStr) {
+          try {
+            const p = JSON.parse(profileStr);
+            name = p.name || name;
+          } catch(e){}
+        }
+        document.getElementById("current-grower-name").textContent = `Active Session: ${name}`;
+        document.getElementById("current-grower-email").textContent = email || "Local Field Session";
+        document.getElementById("existing-profile-banner").classList.remove("hidden");
+        
+        // Pre-fill email
+        if (email) document.getElementById("signin-email").value = email;
+      }
+    }
+
+    // Clear session
+    function clearSession() {
+      localStorage.removeItem("agroaiSessionToken");
+      localStorage.removeItem("agroaiUserEmail");
+      localStorage.removeItem("agribot_grower_profile");
+      document.getElementById("existing-profile-banner").classList.add("hidden");
+      document.getElementById("signin-email").value = "";
+      alert("Grower session cleared successfully.");
+    }
+
+    // Handle Sign In
+    async function handleSignIn(e) {
+      e.preventDefault();
+      const errEl = document.getElementById("signin-error");
+      const succEl = document.getElementById("signin-success");
+      const btn = document.getElementById("signin-submit-btn");
+      errEl.textContent = "";
+      succEl.textContent = "";
+
+      const emailVal = document.getElementById("signin-email").value.trim();
+      const passVal = document.getElementById("signin-password").value;
+
+      if (!emailVal || !passVal) {
+        errEl.textContent = "Please provide your registered grower email and access key.";
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span>Verifying Field Node...</span>';
+
+      // 1. Try Backend API first
+      try {
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: emailVal, password: passVal })
+        });
+        if (response.ok) {
+          const data = await response.json();
+          localStorage.setItem("agroaiSessionToken", data.session_token || "sess_" + Date.now());
+        }
+      } catch (err) {
+        console.log("Local offline storage fallback active");
+      }
+
+      // 2. Client-Side LocalStorage Persistence
+      const sessionToken = "session_" + Math.random().toString(36).substring(2) + "_" + Date.now();
+      localStorage.setItem("agroaiSessionToken", sessionToken);
+      localStorage.setItem("agroaiUserEmail", emailVal);
+
+      // Check if profile exists, otherwise generate basic
+      let profile = {
+        name: emailVal.split('@')[0].toUpperCase(),
+        farm: "AgriBot Field Station",
+        email: emailVal,
+        crop: "Cotton & Wheat",
+        acres: "15",
+        lastLogin: new Date().toISOString()
+      };
+
+      const existingProfileStr = localStorage.getItem("agribot_grower_profile");
+      if (existingProfileStr) {
+        try {
+          const ep = JSON.parse(existingProfileStr);
+          if (ep.email === emailVal) profile = { ...ep, lastLogin: new Date().toISOString() };
+        } catch(e){}
+      }
+
+      localStorage.setItem("agribot_grower_profile", JSON.stringify(profile));
+
+      succEl.textContent = `✓ Access granted for ${profile.name}! Redirecting to Command Center...`;
+      btn.className = "w-full bg-emerald-600 text-white py-3.5 rounded-xl font-bold text-sm shadow-md flex items-center justify-center gap-2 mt-2";
+      btn.innerHTML = '<span>Entering Command Center...</span>';
+
+      setTimeout(() => {
+        window.location.href = "chatbot_page.html";
+      }, 700);
+    }
+
+    // Handle New Registration
+    async function handleRegister(e) {
+      e.preventDefault();
+      const errEl = document.getElementById("reg-error");
+      const succEl = document.getElementById("reg-success");
+      const btn = document.getElementById("reg-submit-btn");
+      errEl.textContent = "";
+      succEl.textContent = "";
+
+      const nameVal = document.getElementById("reg-name").value.trim();
+      const farmVal = document.getElementById("reg-farm").value.trim();
+      const emailVal = document.getElementById("reg-email").value.trim();
+      const cropVal = document.getElementById("reg-crop").value;
+      const acresVal = document.getElementById("reg-acres").value;
+      const passVal = document.getElementById("reg-password").value;
+
+      if (!nameVal || !farmVal || !emailVal || !passVal) {
+        errEl.textContent = "Please fill in all farm profile fields.";
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span>Saving Farm Profile...</span>';
+
+      // Save to localStorage
+      const profile = {
+        name: nameVal,
+        farm: farmVal,
+        email: emailVal,
+        crop: cropVal,
+        acres: acresVal,
+        registeredAt: new Date().toISOString(),
+        lastLogin: new Date().toISOString()
+      };
+
+      localStorage.setItem("agribot_grower_profile", JSON.stringify(profile));
+      localStorage.setItem("agroaiUserEmail", emailVal);
+      localStorage.setItem("agroaiSessionToken", "session_reg_" + Date.now());
+
+      succEl.textContent = `✓ Farm Profile for "${farmVal}" created! Connecting Telemetry Hub...`;
+      btn.className = "w-full bg-emerald-600 text-white py-3 rounded-xl font-bold text-sm shadow-md flex items-center justify-center gap-2 mt-2";
+      btn.innerHTML = '<span>Profile Synchronized! Redirecting...</span>';
+
+      setTimeout(() => {
+        window.location.href = "chatbot_page.html";
+      }, 800);
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      checkExistingProfile();
+      if (window.lucide) lucide.createIcons();
+    });
+  </script>
+
+  <!-- ===== AGRIBOT GLOBAL UI ENHANCEMENT SCRIPTS ===== -->
+  <script>
+    // ==========================================
+    // 1. DARK MODE TOGGLE
+    // ==========================================
+    (function enforceCleanTheme() {
+      // Force clean, high-contrast botanical theme (site is designed for light mode)
+      document.documentElement.classList.remove('dark');
+      if (document.body) document.body.classList.remove('dark');
+      try {
+        localStorage.removeItem('agribot_dark_mode');
+      } catch (e) {}
+    })();
+
+    function toggleDarkMode() {
+      // Theme locked to crisp botanical mode for optimal contrast
+      document.documentElement.classList.remove("dark");
+    }
+
+    // ==========================================
+    // 3. SCROLL-TRIGGERED REVEAL ANIMATIONS
+    // ==========================================
+    /* Scroll reveal observer disabled to ensure all content stays 100% visible */
+
+    // ==========================================
+    // 5. RIPPLE EFFECT ON BUTTONS
+    // ==========================================
+    (function initRipple() {
+      document.addEventListener('click', function(e) {
+        const btn = e.target.closest('button, a.px-4, a.px-5, a.px-7, [onclick]');
+        if (!btn || btn.closest('#agroai-messages')) return;
+
+        btn.style.position = btn.style.position || 'relative';
+        btn.style.overflow = 'hidden';
+
+        const circle = document.createElement('span');
+        circle.classList.add('ripple-circle');
+        const rect = btn.getBoundingClientRect();
+        const diameter = Math.max(rect.width, rect.height) * 2;
+        circle.style.width = circle.style.height = diameter + 'px';
+        circle.style.left = (e.clientX - rect.left - diameter / 2) + 'px';
+        circle.style.top = (e.clientY - rect.top - diameter / 2) + 'px';
+
+        btn.appendChild(circle);
+        circle.addEventListener('animationend', function() { circle.remove(); });
+      });
+    })();
+  </script>
+
+</body>
+</html>

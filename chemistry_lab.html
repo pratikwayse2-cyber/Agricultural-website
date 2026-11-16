@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subsurface Chemistry Lab — AgriBot</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts: Plus Jakarta Sans, Outfit & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Outfit"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            forest: {
+              950: '#04140A',
+              900: '#092414',
+              850: '#0F331E',
+              800: '#144227',
+              700: '#1B5E38',
+              600: '#227D4C',
+            },
+            emerald: {
+              500: '#10B981',
+              400: '#34D399',
+            },
+            sprout: {
+              300: '#86EFAC',
+              400: '#4ADE80',
+              500: '#22C55E',
+            },
+            lime: {
+              300: '#E4FA8E',
+              400: '#CFF632',
+              500: '#B4E618',
+            },
+            meadow: {
+              50: '#F7FAF8',
+              100: '#EEF5F0',
+              200: '#DCECE0',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- ===== AGRIBOT GLOBAL UI ENHANCEMENTS ===== -->
+  <style>
+    /* ==========================================
+       1. DARK MODE — CSS Custom Properties
+       ========================================== */
+    :root {
+      --bg-primary: #F8FAF9;
+      --bg-card: #FFFFFF;
+      --bg-header: rgba(255,255,255,0.92);
+      --text-primary: #092414;
+      --text-secondary: #3B6B4A;
+      --border-primary: #DCECE0;
+      --border-subtle: #EEF5F0;
+      --shadow-card: 0 4px 24px rgba(9,36,20,0.07);
+      --bg-input: #F0F5F1;
+    }
+    .dark {
+      --bg-primary: #0A1A10;
+      --bg-card: #112A18;
+      --bg-header: rgba(10,26,16,0.95);
+      --text-primary: #E8F5EC;
+      --text-secondary: #A3C9B0;
+      --border-primary: #1E3D28;
+      --border-subtle: #162E1E;
+      --shadow-card: 0 4px 24px rgba(0,0,0,0.35);
+      --bg-input: #162E1E;
+    }
+
+    /* Smooth transition on theme change */
+    body, header, main, section, footer, .dark-transition {
+      transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+    }
+
+    /* Dark mode overrides for common elements */
+    /* Dark mode color inversion removed — site is styled for crisp botanical light theme */
+    .dark body, body.dark { background-color: #F8FAF9 !important; color: #092414 !important; }
+    .dark header { background: rgba(255,255,255,0.95) !important; border-color: #DCECE0 !important; }
+    .dark main { color: inherit; }
+    .dark section { border-color: #DCECE0 !important; }
+
+    /* Dark Mode Toggle Button */
+    .dark-mode-toggle {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border-primary);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .dark-mode-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 12px rgba(163,230,53,0.3);
+    }
+    .dark-mode-toggle .icon-sun,
+    .dark-mode-toggle .icon-moon {
+      position: absolute;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
+    }
+    .dark-mode-toggle .icon-sun  { opacity: 1; transform: rotate(0deg) scale(1); }
+    .dark-mode-toggle .icon-moon { opacity: 0; transform: rotate(-90deg) scale(0.5); }
+    .dark .dark-mode-toggle .icon-sun  { opacity: 0; transform: rotate(90deg) scale(0.5); }
+    .dark .dark-mode-toggle .icon-moon { opacity: 1; transform: rotate(0deg) scale(1); }
+    .dark .dark-mode-toggle {
+      background: #1E3D28;
+      border-color: #2D5A3A;
+      color: #A3E635;
+    }
+
+        /* Page load smooth fade (NO transform on body) */
+    @keyframes pageFadeIn { from { opacity: 0.92; } to { opacity: 1; } }
+    body { animation: pageFadeIn 0.2s ease-out; }
+
+    /* ==========================================
+       3. SCROLL-TRIGGERED REVEAL ANIMATIONS
+       ========================================== */
+    .scroll-reveal {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .scroll-reveal.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ==========================================
+       4. TOOLTIP POPOVERS
+       ========================================== */
+    .agri-tooltip {
+      position: relative;
+    }
+    .agri-tooltip::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(6px);
+      background: #092414;
+      color: #E8F5EC;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.5;
+      padding: 8px 12px;
+      border-radius: 10px;
+      white-space: nowrap;
+      max-width: 280px;
+      white-space: normal;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 100;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+    .agri-tooltip::before {
+      content: '';
+      position: absolute;
+      bottom: calc(100% + 2px);
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #092414;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      z-index: 100;
+    }
+    .agri-tooltip:hover::after,
+    .agri-tooltip:hover::before {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .agri-tooltip:hover::before {
+      transform: translateX(-50%);
+    }
+    .dark .agri-tooltip::after {
+      background: #A3E635;
+      color: #052E16;
+    }
+    .dark .agri-tooltip::before {
+      border-top-color: #A3E635;
+    }
+
+    /* ==========================================
+       5. RIPPLE EFFECT ON BUTTONS
+       ========================================== */
+    .ripple-host {
+      position: relative;
+      overflow: hidden;
+    }
+    .ripple-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(163, 230, 53, 0.35);
+      transform: scale(0);
+      animation: rippleExpand 0.5s ease-out forwards;
+      pointer-events: none;
+    }
+    .dark .ripple-circle {
+      background: rgba(163, 230, 53, 0.2);
+    }
+    @keyframes rippleExpand {
+      to { transform: scale(4); opacity: 0; }
+    }
+
+    /* ==========================================
+       6. FLOATING SCROLL-TO-BOTTOM PILL (Chat)
+       ========================================== */
+    .scroll-bottom-pill {
+      position: absolute;
+      bottom: 72px;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: #092414;
+      color: #A3E635;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      border: 1.5px solid rgba(163,230,53,0.3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .scroll-bottom-pill.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+    .scroll-bottom-pill:hover {
+      background: #144227;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    }
+  </style>
+
+</head>
+<body class="bg-meadow-50 text-forest-900 font-sans antialiased selection:bg-lime-400 selection:text-forest-950 min-h-screen flex flex-col">
+
+  <!-- ================= NAVBAR ================= -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-meadow-200">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <!-- Brand -->
+      <a href="chatbot_page.html" class="flex items-center gap-3 no-underline group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-forest-900 to-forest-700 flex items-center justify-center text-lime-400 shadow-md group-hover:scale-105 transition">
+          <i data-lucide="sprout" class="w-6 h-6"></i>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-display font-black text-2xl tracking-tight text-forest-950 leading-none">AgriBot</span>
+          <span class="text-[10px] font-extrabold tracking-widest text-emerald-600 uppercase mt-0.5">Soil Chemistry Diagnostics</span>
+        </div>
+      </a>
+
+      <!-- Nav links -->
+      <nav class="hidden md:flex items-center gap-1.5 bg-meadow-100/90 border border-meadow-200 rounded-full px-3 py-1.5 backdrop-blur-md">
+        <a href="chatbot_page.html" class="px-4 py-2 rounded-full text-xs font-semibold text-forest-700 hover:text-forest-950 transition flex items-center gap-1.5">
+          <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i> Command Center
+        </a>
+        <a href="market_intelligence.html" class="px-4 py-2 rounded-full text-xs font-semibold text-forest-700 hover:text-forest-950 transition flex items-center gap-1.5">
+          <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> Mandi Prices
+        </a>
+        <a href="soil_intelligence.html" class="px-4 py-2 rounded-full text-xs font-semibold text-forest-700 hover:text-forest-950 transition flex items-center gap-1.5">
+          <i data-lucide="layers" class="w-3.5 h-3.5 text-forest-600"></i> Soil Intelligence
+        </a>
+        <a href="weather_intelligence.html" class="px-4 py-2 rounded-full text-xs font-semibold text-forest-700 hover:text-forest-950 transition flex items-center gap-1.5">
+          <i data-lucide="cloud-sun" class="w-3.5 h-3.5 text-forest-600"></i> Weather & Soil
+        </a>
+        <a href="crop_lifecycle.html" class="px-4 py-2 rounded-full text-xs font-semibold text-forest-700 hover:text-forest-950 transition flex items-center gap-1.5">
+          <i data-lucide="calendar" class="w-3.5 h-3.5"></i> Crop Lifecycle
+        </a>
+        <a href="chemistry_lab.html" class="px-4 py-2 rounded-full text-xs font-bold bg-white text-forest-950 shadow-sm border border-meadow-200 transition flex items-center gap-1.5">
+          <i data-lucide="flask-conical" class="w-3.5 h-3.5 text-emerald-600"></i> Chemistry Lab
+        </a>
+        <a href="about_us.html" class="px-4 py-2 rounded-full text-xs font-semibold text-forest-700 hover:text-forest-950 transition flex items-center gap-1.5">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Mission
+        </a>
+      </nav>
+
+      <a href="chatbot_page.html" class="flex items-center gap-2 text-xs font-bold bg-forest-900 text-lime-400 px-4 py-2 rounded-full hover:bg-forest-800 transition">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Ask AgroAI
+      </a>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <main class="flex-1 max-w-7xl mx-auto px-6 py-12 w-full">
+    
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-xs font-bold text-emerald-800 uppercase tracking-widest mb-3 border border-emerald-500/20">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          Soil & Water Stoichiometry Lab
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-display font-black text-forest-950 tracking-tight">
+          Subsurface Chemistry Suite
+        </h1>
+        <p class="text-forest-800/80 text-base mt-2 max-w-2xl">
+          Transform raw soil assays and water electrical conductivity telemetry into calibrated micro-fertigation formulations and biological soil amendments.
+        </p>
+      </div>
+
+      <div class="bg-white p-3 rounded-2xl border border-meadow-200 shadow-sm flex items-center gap-3">
+        <span class="text-xs font-bold text-forest-800 uppercase tracking-wider pl-2">Horizon Sample:</span>
+        <select id="sampleZone" class="bg-meadow-50 border border-meadow-200 text-forest-950 font-bold text-xs rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 cursor-pointer" onchange="switchSoilSample(this.value)">
+          <option value="top_0_10">⛰️ Ridge Top (0-10 cm Topsoil) — pH 5.40 | P: 215 ppm</option>
+          <option value="top_30_60">⛰️ Ridge Top (30-60 cm Rootzone) — pH 4.37 | EC: 5.73</option>
+          <option value="slope_0_10">📐 Hill Slope (0-10 cm Surface) — pH 5.11 | N: 0.25%</option>
+          <option value="slope_60_90">📐 Hill Slope (60-90 cm Deep) — pH 3.80 | Salinity 11.57</option>
+          <option value="dep_0_10">🌊 Valley Depression (0-10 cm Floor) — pH 5.24 | P: 445 ppm</option>
+          <option value="dep_60_90">🌊 Valley Depression (60-90 cm Substratum) — pH 3.82 | Salinity 12.26</option>
+          <option value="zoneA">Zone A-12: Standard Loamy Topsoil</option>
+          <option value="zoneC">Zone C-09: Alkaline Heavy Clay</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 3 Dynamic Assay Cards -->
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      
+      <!-- Card 1: Soil pH -->
+      <div class="bg-white rounded-3xl p-6 border border-meadow-200 shadow-sm flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between text-xs text-forest-700 font-bold mb-2">
+            <span>Soil Acidity / Alkalinity</span>
+            <i data-lucide="activity" class="w-4 h-4 text-emerald-600"></i>
+          </div>
+          <p class="text-xs text-forest-600">Active Rhizosphere pH</p>
+          <div class="flex items-baseline gap-2 mt-1">
+            <span class="font-mono text-4xl font-black text-forest-950" id="phValue">6.8</span>
+            <span class="text-xs font-bold text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-full" id="phBadge">Optimal Neutral</span>
+          </div>
+
+          <div class="w-full bg-meadow-100 h-2 rounded-full mt-4 overflow-hidden relative">
+            <div class="bg-gradient-to-r from-red-400 via-emerald-500 to-blue-400 h-full rounded-full" style="width: 100%;"></div>
+          </div>
+          <div class="flex justify-between text-[10px] text-forest-600 mt-1 font-mono">
+            <span>4.0 Acidic</span>
+            <span>7.0 Neutral</span>
+            <span>9.0 Alkaline</span>
+          </div>
+        </div>
+
+        <p class="text-xs text-forest-800 mt-4 pt-3 border-t border-meadow-100" id="phAdvice">
+          Ideal for nitrogen and phosphorus bio-availability. No lime amendment necessary.
+        </p>
+      </div>
+
+      <!-- Card 2: Nitrate & Nutrients -->
+      <div class="bg-white rounded-3xl p-6 border border-meadow-200 shadow-sm flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between text-xs text-forest-700 font-bold mb-2">
+            <span>Available Nitrogen (NO3-N)</span>
+            <i data-lucide="leaf" class="w-4 h-4 text-emerald-600"></i>
+          </div>
+          <p class="text-xs text-forest-600">Lab Extract Reading</p>
+          <div class="flex items-baseline gap-2 mt-1">
+            <span class="font-mono text-4xl font-black text-forest-950" id="nitroValue">42</span>
+            <span class="font-mono text-sm text-forest-700 font-bold">PPM</span>
+            <span class="text-xs font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full" id="nitroBadge">Moderate Deficiency</span>
+          </div>
+
+          <div class="w-full bg-meadow-100 h-2 rounded-full mt-4 overflow-hidden">
+            <div class="bg-amber-500 h-full rounded-full transition-all duration-300" id="nitroBar" style="width: 42%;"></div>
+          </div>
+        </div>
+
+        <p class="text-xs text-forest-800 mt-4 pt-3 border-t border-meadow-100" id="nitroAdvice">
+          Recommend micro-dosing 15 kg/ha organic nitrogen compost before crown root formation.
+        </p>
+      </div>
+
+      <!-- Card 3: Water EC & Salinity -->
+      <div class="bg-white rounded-3xl p-6 border border-meadow-200 shadow-sm flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between text-xs text-forest-700 font-bold mb-2">
+            <span>Irrigation Salinity (ECw)</span>
+            <i data-lucide="droplet" class="w-4 h-4 text-blue-500"></i>
+          </div>
+          <p class="text-xs text-forest-600">Dielectric Conductivity</p>
+          <div class="flex items-baseline gap-2 mt-1">
+            <span class="font-mono text-4xl font-black text-forest-950" id="ecValue">0.72</span>
+            <span class="font-mono text-sm text-forest-700 font-bold">dS/m</span>
+            <span class="text-xs font-bold text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-full">Safe / Low Salt</span>
+          </div>
+
+          <div class="w-full bg-meadow-100 h-2 rounded-full mt-4 overflow-hidden">
+            <div class="bg-emerald-500 h-full rounded-full" style="width: 25%;"></div>
+          </div>
+        </div>
+
+        <p class="text-xs text-forest-800 mt-4 pt-3 border-t border-meadow-100">
+          Zero osmotic stress. Safe for sensitive drip emitters and root hair absorption.
+        </p>
+      </div>
+
+    </section>
+
+    <!-- Interactive Macronutrient (NPK) Stoichiometry Lab -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
+      
+      <!-- Interactive Sliders (Left) -->
+      <section class="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-meadow-200 shadow-sm">
+        <div class="flex items-center justify-between pb-4 mb-6 border-b border-meadow-100">
+          <div>
+            <h2 class="font-display text-xl font-bold text-forest-950">Nutrient Matrix Calibrator</h2>
+            <p class="text-xs text-forest-700">Adjust target field inputs to calculate custom fertigation recipes.</p>
+          </div>
+          <span class="text-xs font-bold px-3 py-1 rounded-full bg-meadow-100 text-forest-800 border border-meadow-200">Interactive</span>
+        </div>
+
+        <div class="space-y-6">
+          <!-- Nitrogen Slider -->
+          <div>
+            <div class="flex justify-between items-center text-xs font-bold mb-2">
+              <span class="text-forest-950 flex items-center gap-1.5"><i data-lucide="leaf" class="w-4 h-4 text-emerald-600"></i> Nitrogen (N) Target:</span>
+              <span class="font-mono text-forest-900 text-sm" id="sliderNVal">60 kg/ha</span>
+            </div>
+            <input type="range" class="w-full accent-emerald-600 cursor-pointer" min="10" max="150" value="60" oninput="updateFormulation()">
+          </div>
+
+          <!-- Phosphorus Slider -->
+          <div>
+            <div class="flex justify-between items-center text-xs font-bold mb-2">
+              <span class="text-forest-950 flex items-center gap-1.5"><i data-lucide="atom" class="w-4 h-4 text-blue-600"></i> Phosphorus (P2O5) Target:</span>
+              <span class="font-mono text-forest-900 text-sm" id="sliderPVal">30 kg/ha</span>
+            </div>
+            <input type="range" class="w-full accent-blue-600 cursor-pointer" min="5" max="80" value="30" oninput="updateFormulation()">
+          </div>
+
+          <!-- Potassium Slider -->
+          <div>
+            <div class="flex justify-between items-center text-xs font-bold mb-2">
+              <span class="text-forest-950 flex items-center gap-1.5"><i data-lucide="shield" class="w-4 h-4 text-amber-600"></i> Potassium (K2O) Target:</span>
+              <span class="font-mono text-forest-900 text-sm" id="sliderKVal">45 kg/ha</span>
+            </div>
+            <input type="range" class="w-full accent-amber-600 cursor-pointer" min="10" max="120" value="45" oninput="updateFormulation()">
+          </div>
+        </div>
+
+        <div class="mt-8 p-4 rounded-2xl bg-meadow-50 border border-meadow-100 flex items-center justify-between text-xs text-forest-800">
+          <span>Target Crop Ratio (N:P:K): <strong class="font-mono text-forest-950 font-bold">4 : 2 : 3</strong></span>
+          <span class="text-emerald-700 font-bold">Optimized for Vegetative Growth</span>
+        </div>
+      </section>
+
+      <!-- Automated Bio-Recipe Generator (Right) -->
+      <section class="lg:col-span-5 bg-gradient-to-br from-forest-950 to-forest-900 text-white rounded-3xl p-6 sm:p-8 shadow-md border border-forest-800 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-2 text-xs font-bold text-lime-400 uppercase tracking-wider mb-3">
+            <i data-lucide="sparkles" class="w-4 h-4"></i> Organic Amendment Recipe
+          </div>
+          <h3 class="font-display text-2xl font-bold mb-2">Calibrated Drip Injection</h3>
+          <p class="text-xs text-slate-300 leading-relaxed mb-6">
+            Recommended batch recipe for 10-Acre irrigation manifold to achieve balanced biological uptake without soil lock-up.
+          </p>
+
+          <div class="space-y-3 font-mono text-xs">
+            <div class="flex justify-between items-center p-3 rounded-xl bg-forest-850 border border-forest-700">
+              <span class="text-slate-300">Humic Liquid Carbon Extract</span>
+              <span class="text-lime-400 font-bold" id="recHumic">25 Liters</span>
+            </div>
+            <div class="flex justify-between items-center p-3 rounded-xl bg-forest-850 border border-forest-700">
+              <span class="text-slate-300">Fish Hydrolysate (N-Rich)</span>
+              <span class="text-lime-400 font-bold" id="recFish">40 kg</span>
+            </div>
+            <div class="flex justify-between items-center p-3 rounded-xl bg-forest-850 border border-forest-700">
+              <span class="text-slate-300">Soluble Potassium Silicate</span>
+              <span class="text-lime-400 font-bold" id="recPotash">18 kg</span>
+            </div>
+          </div>
+        </div>
+
+        <a href="precision_drip.html#simulator" class="mt-6 flex items-center justify-center gap-2 bg-lime-400 hover:bg-lime-300 text-forest-950 py-3 rounded-2xl font-bold text-xs uppercase tracking-wider transition">
+          <span>Apply to Drip Architecture</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </a>
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="bg-white border-t border-meadow-200 py-8 text-center text-xs text-forest-700">
+    <p>© 2026 AgriBot Agri-Tech. Subsurface Agronomic Chemistry Laboratory.</p>
+  </footer>
+
+  <script>
+    const sampleProfiles = {
+      top_0_10: { ph: "5.40", phBadge: "Moderately Acidic", nitro: "188", nitroBadge: "High Organic N (0.19%)", nitroWidth: "75%", ec: "1.09", advice: "Topsoil horizon T0: Healthy available phosphorus (215 ppm) and organic nitrogen. Balanced Ca:Mg ratio (16.3 : 7.6)." },
+      top_30_60: { ph: "4.37", phBadge: "Strongly Acidic Subsoil", nitro: "112", nitroBadge: "Moderate N", nitroWidth: "45%", ec: "5.73", advice: "Root Zone T3: pH drops to 4.37 with rising electrical conductivity (5.73 dS/m). Recommend liquid humate buffers." },
+      slope_0_10: { ph: "5.11", phBadge: "Slope Surface", nitro: "247", nitroBadge: "Very High N (0.25%)", nitroWidth: "90%", ec: "2.61", advice: "Hill Gradient S0: High fertility crust (P: 261 ppm). Excellent water infiltration with bulk density 0.94 g/cm³." },
+      slope_60_90: { ph: "3.80", phBadge: "Extreme Acid Substratum", nitro: "49", nitroBadge: "Depleted Subsoil N", nitroWidth: "20%", ec: "11.57", advice: "Deep Horizon S6: Elevated sodium (9.57 meq) and salinity (11.57 dS/m). Root pruning risk beyond 60cm." },
+      dep_0_10: { ph: "5.24", phBadge: "Valley Basin Topsoil", nitro: "194", nitroBadge: "Rich Accumulation", nitroWidth: "80%", ec: "0.75", advice: "Depression Basin D0: Outstanding available phosphorus (445 ppm) with very low osmotic stress (0.75 dS/m)." },
+      dep_60_90: { ph: "3.82", phBadge: "Compacted Substratum", nitro: "38", nitroBadge: "Leached N", nitroWidth: "15%", ec: "12.26", advice: "Deep Sump D6: High compaction (1.40 g/cm³) and high electrical conductivity (12.26 dS/m). Ideal for shallow root irrigation." },
+      zoneA: { ph: "6.80", phBadge: "Optimal Neutral", nitro: "142", nitroBadge: "Balanced Level", nitroWidth: "60%", ec: "0.72", advice: "Ideal for nitrogen and phosphorus bio-availability. No lime amendment necessary." },
+      zoneC: { ph: "7.90", phBadge: "Alkaline / Calcareous", nitro: "165", nitroBadge: "Adequate Level", nitroWidth: "70%", ec: "1.35", advice: "Apply elemental sulfur or gypsum to reduce sodium saturation and increase iron uptake." }
+    };
+
+    function switchSoilSample(zoneKey) {
+      const data = sampleProfiles[zoneKey];
+      document.getElementById('phValue').textContent = data.ph;
+      document.getElementById('phBadge').textContent = data.phBadge;
+      document.getElementById('nitroValue').textContent = data.nitro;
+      document.getElementById('nitroBadge').textContent = data.nitroBadge;
+      document.getElementById('nitroBar').style.width = data.nitroWidth;
+      document.getElementById('ecValue').textContent = data.ec;
+      document.getElementById('phAdvice').textContent = data.advice;
+    }
+
+    function updateFormulation() {
+      // Dynamic calculations for recipe display
+      const inputs = document.querySelectorAll('input[type="range"]');
+      const nVal = inputs[0].value;
+      const pVal = inputs[1].value;
+      const kVal = inputs[2].value;
+
+      document.getElementById('sliderNVal').textContent = nVal + ' kg/ha';
+      document.getElementById('sliderPVal').textContent = pVal + ' kg/ha';
+      document.getElementById('sliderKVal').textContent = kVal + ' kg/ha';
+
+      document.getElementById('recHumic').textContent = Math.round(nVal * 0.45) + ' Liters';
+      document.getElementById('recFish').textContent = Math.round(nVal * 0.65) + ' kg';
+      document.getElementById('recPotash').textContent = Math.round(kVal * 0.4) + ' kg';
+    }
+
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  </script>
+
+  <!-- ===== AGRIBOT GLOBAL UI ENHANCEMENT SCRIPTS ===== -->
+  <script>
+    // ==========================================
+    // 1. DARK MODE TOGGLE
+    // ==========================================
+    (function enforceCleanTheme() {
+      // Force clean, high-contrast botanical theme (site is designed for light mode)
+      document.documentElement.classList.remove('dark');
+      if (document.body) document.body.classList.remove('dark');
+      try {
+        localStorage.removeItem('agribot_dark_mode');
+      } catch (e) {}
+    })();
+
+    function toggleDarkMode() {
+      // Theme locked to crisp botanical mode for optimal contrast
+      document.documentElement.classList.remove("dark");
+    }
+
+    // ==========================================
+    // 3. SCROLL-TRIGGERED REVEAL ANIMATIONS
+    // ==========================================
+    /* Scroll reveal observer disabled to ensure all content stays 100% visible */
+
+    // ==========================================
+    // 5. RIPPLE EFFECT ON BUTTONS
+    // ==========================================
+    (function initRipple() {
+      document.addEventListener('click', function(e) {
+        const btn = e.target.closest('button, a.px-4, a.px-5, a.px-7, [onclick]');
+        if (!btn || btn.closest('#agroai-messages')) return;
+
+        btn.style.position = btn.style.position || 'relative';
+        btn.style.overflow = 'hidden';
+
+        const circle = document.createElement('span');
+        circle.classList.add('ripple-circle');
+        const rect = btn.getBoundingClientRect();
+        const diameter = Math.max(rect.width, rect.height) * 2;
+        circle.style.width = circle.style.height = diameter + 'px';
+        circle.style.left = (e.clientX - rect.left - diameter / 2) + 'px';
+        circle.style.top = (e.clientY - rect.top - diameter / 2) + 'px';
+
+        btn.appendChild(circle);
+        circle.addEventListener('animationend', function() { circle.remove(); });
+      });
+    })();
+  </script>
+
+</body>
+</html>
